@@ -108,14 +108,7 @@ add_bool_option(TEST_BOOL_OPTION OFF "Just a test option")
 
 include_directories(
     # project directories
-    tests
-    #datacacheclient/include
-    #datacacheclient/include/lcc
-    #datacacheclient/include/avl
-    #datacacheserver/include/
-    #datacacheserver/include/lcc/
-    #datacacheserver/include/avl/
-    #datacacheserver/include/tests/
+    objects/include
 
     # external directories
     ${CMAKE_BINARY_DIR}
