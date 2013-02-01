@@ -24,12 +24,12 @@ public:
 public:
     
     /**
-     * In any of these functions, if id is < 0 then a new object will be added to the knowledge base
+     * In any of these functions, if id of object is < 0 then a new id will be generated
      */
-    virtual bool modifyCategory(Category* category) = 0;
-    virtual bool modifyProblem(Problem* category) = 0;
-    virtual bool modifySymptom(Symptom* category) = 0;
-    virtual bool modifySolution(Solution* category) = 0;
+    virtual Category* modify(const Category* category) = 0;
+    virtual Problem* modify(const Problem* problem) = 0;
+    virtual Symptom* modify(const Symptom* symptom) = 0;
+    virtual Solution* modify(const Solution* solution) = 0;
 
 };
 

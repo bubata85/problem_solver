@@ -1,0 +1,4 @@
+Who owns the memory returned by datalayer?
+How will update objects related to something changed?
+What happens to the object passed to modify functions?
+How is the object passed to modify functions gonna be created?

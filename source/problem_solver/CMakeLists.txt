@@ -103,12 +103,15 @@ find_path(MYSQLPP_INCLUDE_DIR
 
 add_bool_option(TEST_BOOL_OPTION OFF "Just a test option")
 
-
-# LIBS AND EXECUTABLES
+# INCLUDE DIRECTORIES
 
 include_directories(
     # project directories
+    utils/include
     objects/include
+    datalayer/include
+    system/include
+    server/include
 
     # external directories
     ${CMAKE_BINARY_DIR}
@@ -116,33 +119,51 @@ include_directories(
     ${MYSQLPP_INCLUDE_DIR}
 )
 
+# LIBS AND EXECUTABLES
 
-
-#add_library(backtrace SHARED
-#  utils/src/backtrace.cpp
-#  )
 
 # contains generic reusable code
-#add_library(utils SHARED
-#    utils/src/filesystemutils.cpp
-#
-#)
-#target_link_libraries(utils
-#    ${Boost_LIBRARIES}
-#    ${CMAKE_THREAD_LIBS_INIT}
-#)
+add_library(utils SHARED
+    utils/src/utils.cpp
+)
+target_link_libraries(utils
+    ${Boost_LIBRARIES}
+    ${CMAKE_THREAD_LIBS_INIT}
+)
+
+
+# contains different datalayer implementations
+add_library(datalayer SHARED
+    datalayer/src/memorydatalayer.cpp
+    datalayer/src/mysqldatalayer.cpp
+    datalayer/src/cachingdatalayer.cpp
+)
+target_link_libraries(datalayer
+    utils
+)
+
+
+# contains system related code
+add_library(system SHARED
+    system/src/solvingmachine.cpp
+    system/src/systemmanager.cpp
+    system/src/remotesystemmanager.cpp
+)
+target_link_libraries(system
+    datalayer
+)
+
 
 # availability server PING tool
-add_executable(helloworld
-    tests/helloworld.cpp
+add_executable(solvingserver
+    server/src/solvingserver.cpp
     )
-target_link_libraries (helloworld
-    #avlutils
+target_link_libraries (solvingserver
+    system
     )
-set_target_properties (helloworld
+set_target_properties (solvingserver
   PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
-
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/solvingserver)
 
 
 # contains generic reusable code for web

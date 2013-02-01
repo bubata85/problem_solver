@@ -17,7 +17,6 @@ int main(int argc, const char* argv[])
     ProblemSolver::Symptom symptom;
     ProblemSolver::Solution solution;
     
-    
     printf("Hello world!\n");
     return 0;
 }
