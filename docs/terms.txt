@@ -1,0 +1,21 @@
+Service strategy - Стратегия на услугите
+Service design - Проектиране на услугите
+Service transition - Преходи в услугите
+Service operation - Опериране на услугите
+Continual service improvement - Постоянно подобряване на услугите
+ITIL Service Management Lifecycle - жизнения цикъл на услугите в ITIL
+
+Event Management - Управление на събитията
+Incident Management - Управление на ицидентите
+Request Fulfilment - Изпълнение на заявките
+Problem Management - Управление на проблемите
+Access Management - Управление на достъпа
+
+Service Desk - Сървис Деск
+Technical Management - Управление на техниката
+IT Operations Management - Управление на ИТ операциите
+Application Management - Управление на приложенията
+Monitoring and Control - Мониторинг и контрол
+
+impact въздействие
+involved замесени
