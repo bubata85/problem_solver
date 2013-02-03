@@ -7,7 +7,7 @@ ITIL Service Management Lifecycle - жизнения цикъл на услугите в ITIL
 
 Event Management - Управление на събитията
 Incident Management - Управление на ицидентите
-Request Fulfilment - Изпълнение на заявките
+Request Fulfilment - Изпълнение на заявки
 Problem Management - Управление на проблемите
 Access Management - Управление на достъпа
 
@@ -17,5 +17,29 @@ IT Operations Management - Управление на ИТ операциите
 Application Management - Управление на приложенията
 Monitoring and Control - Мониторинг и контрол
 
+Change managemet - Управление на промените
+Release Management - Управление на версиите
+Asset Management - Управление на активите
+Configuration Management - Управление на конфигурацията 
+Availability Management - Управление на наличността
+Information Security Management - Управление на информационната сигурност
+
+Technical Management - Управление на техниката
+Application Management - Управление на приложенията
+IT Operations Management - Управление на ИТ операциите 
+
+asset актив
 impact въздействие
 involved замесени
+deployment разгръщане
+release версия
+tools средства
+coding system система с кодове
+responsiveness отговоряемост
+
+Knowledge Management - Управление на знанията
+
+
+Неявното знание (Tacit Knowledge) 
+Изричното Знание (Explicit Knowledge) 
+articulate изрази 
