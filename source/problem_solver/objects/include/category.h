@@ -8,7 +8,7 @@
 #pragma once
 
 #include <string>
-#include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
 
 namespace ProblemSolver
 {
@@ -28,11 +28,7 @@ struct Category
     std::string name;
     std::string description;
     
-    Category* parent;
-    boost::unordered_map<int, Category*> childs;
-    
-    boost::unordered_map<int, Symptom*> symptoms;
-    boost::unordered_map<int, Problem*> problems;
+    int parent;
 };
 
 } // namespace ProblemSolver

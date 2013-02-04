@@ -16,8 +16,6 @@
 
 #include "genericinfo.h"
 
-#include <boost/unordered_map.hpp>
-
 namespace ProblemSolver
 {
 
@@ -30,10 +28,13 @@ class SymptomLink;
  */
 struct Symptom: public GenericInfo
 {
-    // information about the problems this symptom is connected to
-    // key is problem ID, value is pointer to link
-    typedef boost::unordered_map<int, SymptomLink*> ProblemToLinkMap;
-    ProblemToLinkMap problemLinks;
+};
+
+/**
+ * Same as the symptom but also contains extended information for use by the user
+ */
+struct ExtendedSymptom: public Symptom, public ExtendedGenericInfo
+{
 };
 
 /**
@@ -43,8 +44,8 @@ struct SymptomLink
 {
     int id;
     
-    Problem* problem;
-    Symptom* symptom;
+    int problemID;
+    int symptomID;
     
     int positiveChecks; // how many times were the problem and the symptom both positive
     int falsePositiveChecks; // how many times was the problem negative but the symptom positive

@@ -41,11 +41,14 @@ public:
      */
     struct Suggestion
     {
-        std::vector<Symptom*> symptoms; // list of symptoms that can be checked
-        std::vector<int> symptomValues; // value for checking each symptom
+        std::vector<int> symptoms; // list of symptoms that can be checked
+        std::vector<int> symptomValues; // numeric representation of how worth it is to check a symptom
         
-        std::vector<Problem*> problems; // list of problems that can be checked
-        std::vector<int> problemValues; // value for checking each problem
+        std::vector<int> problems; // list of problems that can be checked
+        std::vector<int> problemValues; // numeric representation of how worth it is to check a problem
+        
+        std::vector<int> solutions; // list of solutions that can be applied
+        std::vector<int> problemValues; // numeric representation of how worth it is to apply a solution
     };
     
 public:

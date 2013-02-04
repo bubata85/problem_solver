@@ -24,12 +24,34 @@ public:
 public:
     
     /**
-     * In any of these functions, if id of object is < 0 then a new id will be generated
+     * In add functions the ID of the object is irrelevant, the ID of the new object is returned
      */
-    virtual Category* modify(const Category* category) = 0;
-    virtual Problem* modify(const Problem* problem) = 0;
-    virtual Symptom* modify(const Symptom* symptom) = 0;
-    virtual Solution* modify(const Solution* solution) = 0;
+    virtual int add(const Category& category) = 0;
+    virtual int add(const Problem& problem) = 0;
+    virtual int add(const Symptom& symptom) = 0;
+    virtual int add(const SymptomLink& symptomLink) = 0;
+    virtual int add(const Solution& solution) = 0;
+    virtual int add(const SolutionLink& solutionLink) = 0;
+    
+    /**
+     * There is no way to edit the object ID, it is always used to find the object needing change
+     */
+    virtual void modify(const Category& category) = 0;
+    virtual void modify(const Problem& problem) = 0;
+    virtual void modify(const Symptom& symptom) = 0;
+    virtual void modify(const SymptomLink& symptomLink) = 0;
+    virtual void modify(const Solution& solution) = 0;
+    virtual void modify(const SolutionLink& solutionLink) = 0;
+    
+    /**
+     * Only the ID of the supplied object is used
+     */
+    virtual void remove(const Category& category) = 0;
+    virtual void remove(const Problem& problem) = 0;
+    virtual void remove(const Symptom& symptom) = 0;
+    virtual void remove(const SymptomLink& symptomLink) = 0;
+    virtual void remove(const Solution& solution) = 0;
+    virtual void remove(const SolutionLink& solutionLink) = 0;
 
 };
 

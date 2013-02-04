@@ -9,7 +9,7 @@
 
 #include "genericinfo.h"
 
-#include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
 
 namespace ProblemSolver
 {
@@ -19,14 +19,26 @@ class SolutionLink;
 
 /**
  * A solution contains the steps in order to resolve a problem.
- * In some cases more than one problem can have the same solution
+ * In some cases more than one problems can have the same solution.
+ * Sometimes solutions can be used during problem identification.
+ * This is because it is sometimes cheaper to apply a solution instead of verifying
+ * symptoms or problems.
+ * Take this example: Vending machine.
+ * Symptoms - takes cash, makes sounds, does not vend anything
+ * Problems - Internal mechanism jam, No supplies, Supply jam
+ * If there are supplies, it could not be possible to tell if there is any type of jam.
+ * The system will however propose to "kick the machine" as this is a good and quick solution to both
+ * jams. This will however only be done if the user has selected "cannot check" for at least one verification.
  */
 struct Solution: public GenericInfo
 {
-    // information about the problems this solution is connected to
-    // key is problem ID, value is pointer to link
-    typedef boost::unordered_map<int, SolutionLink*> ProblemToLinkMap;
-    ProblemToLinkMap symptomLinks;
+};
+
+/**
+ * Same as the solution but also contains extended information for use by the user
+ */
+struct ExtendedSolution: public Solution, public ExtendedGenericInfo
+{
 };
 
 /**
@@ -36,8 +48,8 @@ struct SolutionLink
 {
     int id;
     
-    Problem* problem;
-    Solution* solution;
+    int problemID;
+    int solutionID;
     
     int positive; // how many times the solution fixed the problem
     int negative; // how many times the solution did not fixed the problem

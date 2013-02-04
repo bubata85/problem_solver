@@ -9,15 +9,8 @@
 
 #include "genericinfo.h"
 
-#include <boost/unordered_map.hpp>
-
 namespace ProblemSolver
 {
-
-class Symptom;
-class SymptomLink;
-class Solution;
-class SolutionLink;
 
 /**
  * A problem can be anything that can cause SYMPTOMS, has SOLUTIONS and can be VERIFIED before applying
@@ -51,15 +44,13 @@ class SolutionLink;
  */
 struct Problem: public GenericInfo
 {
-    // information about the symptoms this problem is connected to
-    // key is symptom ID, value is pointer to link
-    typedef boost::unordered_map<int, SymptomLink*> SymptomToLinkMap;
-    SymptomToLinkMap symptomLinks;
-    
-    // information about the solutions this problem is connected to
-    // key is solution ID, value is pointer to link
-    typedef boost::unordered_map<int, SolutionLink*> SolutionToLinkMap;
-    SolutionToLinkMap solutionLinks;
+};
+
+/**
+ * Same as the problem but also contains extended information for use by the user
+ */
+struct ExtendedProblem: public Problem, public ExtendedGenericInfo
+{
 };
 
 } // namespace ProblemSolver

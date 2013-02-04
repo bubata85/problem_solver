@@ -17,19 +17,27 @@ namespace ProblemSolver
 {
 
 /**
- * Holds all generic information present in any object used by the system
+ * Holds simple generic information present in many objects used by the system
  */
 struct GenericInfo
 {
     int id; // id of the object
+    DifficultyLevel difficulty; // difficulty level of "completion"
+    bool confirmed; // indicates if a specialist has confirmed this object
+};
+
+/**
+ * Holds extended generic information that is generally needed only by the user
+ */
+struct ExtendedGenericInfo
+{
+    int categoryID; // id of the category the object is part of
+    
     std::string name; // name of the object
     std::string description; // description of the object
     boost::unordered_set<std::string> tags; // tags associated with the object
     
-    DifficultyLevel difficulty; // difficulty level of "completion"
     std::vector<std::string> steps; // steps needed to "complete"
-
-    bool confirmed; // indicates if a specialist has confirmed this object
 };
 
 } // namespace ProblemSolver
