@@ -2,13 +2,12 @@
  * ProblemSolver - Self-service problem identification and fixing solution
  *
  *  Copyright (C) 2013 Lyubomir Stankov.
- *  This program is free software: you can redistribute it and/or modify it under the terms of FreeBSD license.
+ *  This program is free software: you can redistribute it and/or modify it under the terms of the FreeBSD license.
  */
 
 #include "solvingmachine.h"
 
-#include "symptom.h"
-#include "problem.h"
+#include "datalayerread.h"
 
 namespace ProblemSolver
 {
@@ -16,7 +15,7 @@ namespace ProblemSolver
 /**
  * Returns a suggested continue path for identifying the input unknown problem.
  */
-SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const UnknownProblem& unknownProblem)
+SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& investigation, IDataLayerRead& dataLayer)
 {
     Suggestion suggestion;
     

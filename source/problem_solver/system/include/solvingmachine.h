@@ -2,7 +2,7 @@
  * ProblemSolver - Self-service problem identification and fixing solution
  *
  *  Copyright (C) 2013 Lyubomir Stankov.
- *  This program is free software: you can redistribute it and/or modify it under the terms of FreeBSD license.
+ *  This program is free software: you can redistribute it and/or modify it under the terms of the FreeBSD license.
  */
 
 #pragma once
@@ -12,8 +12,8 @@
 namespace ProblemSolver
 {
 
-class Symptom;
-class Problem;
+class IDataLayerRead;
+class Investigation;
     
 /**
  * This class groups all functionality connected with making suggestions about how to identify unknown problems
@@ -21,19 +21,6 @@ class Problem;
 class SolvingMachine
 {
 public:
-    
-    /**
-     * Holds information about a problem we need to identify
-     */
-    struct UnknownProblem
-    {
-        std::vector<Symptom*> positiveSymptoms; // symptoms that have been verified as positive
-        std::vector<Symptom*> negativeSymptoms; // symptoms that have been verified as negative
-        std::vector<Symptom*> bannedSymptoms; // symptoms that the user does not wish to verify
-        
-        std::vector<Problem*> negativeProblems; // problems that have been verified as negative
-        std::vector<Problem*> bannedProblems; // problems that the user does not wish to verify
-    };
     
     /**
      * This is the result of a makeSuggestion call.
@@ -48,12 +35,12 @@ public:
         std::vector<int> problemValues; // numeric representation of how worth it is to check a problem
         
         std::vector<int> solutions; // list of solutions that can be applied
-        std::vector<int> problemValues; // numeric representation of how worth it is to apply a solution
+        std::vector<int> solutionValues; // numeric representation of how worth it is to apply a solution
     };
     
 public:
     
-    static Suggestion makeSuggestion(const UnknownProblem& unknownProblem);
+    static Suggestion makeSuggestion(const Investigation& Investigation, IDataLayerRead& dataLayer);
 
 };
 

@@ -2,15 +2,10 @@
  * ProblemSolver - Self-service problem identification and fixing solution
  *
  *  Copyright (C) 2013 Lyubomir Stankov.
- *  This program is free software: you can redistribute it and/or modify it under the terms of FreeBSD license.
+ *  This program is free software: you can redistribute it and/or modify it under the terms of the FreeBSD license.
  */
 
 #include "cachingdatalayer.h"
-
-#include "category.h"
-#include "problem.h"
-#include "symptom.h"
-#include "solution.h"
 
 namespace ProblemSolver
 {
@@ -19,8 +14,10 @@ CachingDataLayer::CachingDataLayer(IDataLayer* source, IDataLayer* cache):
     _source(source),
     _cache(cache)
 {
+    // initial load of all related objects
+    
 }
-
+/*
 bool CachingDataLayer::get(const std::vector<int>& categoryIDs, std::vector<const Category*>& result)
 {
     return templateGet(categoryIDs, result);
@@ -59,12 +56,12 @@ Symptom* CachingDataLayer::modify(const Symptom* symptom)
 Solution* CachingDataLayer::modify(const Solution* solution)
 {
     return templateModify(solution);
-}
+}*/
 
 /**
  * Retrieves objects from the cache, and if they are not found searches for them in the source.
  * Anything found in the source is saved in cache for later use.
- */
+ *//*
 template<class T>
 bool CachingDataLayer::templateGet(const std::vector<int>& ids, std::vector<const T*>& result)
 {
@@ -119,7 +116,7 @@ T* CachingDataLayer::templateModify(const T* object)
         return NULL;
     
     return _cache->modify(object);
-}
+}*/
 
 
 } // namespace ProblemSolver

@@ -2,7 +2,7 @@
  * ProblemSolver - Self-service problem identification and fixing solution
  *
  *  Copyright (C) 2013 Lyubomir Stankov.
- *  This program is free software: you can redistribute it and/or modify it under the terms of FreeBSD license.
+ *  This program is free software: you can redistribute it and/or modify it under the terms of the FreeBSD license.
  */
 
 #pragma once
@@ -55,6 +55,8 @@ struct SolutionLink
     int negative; // how many times the solution did not fixed the problem
     
     bool confirmed; // indicates if a specialist has confirmed this solution
+    
+    SolutionLink():id(-1),problemID(-1),solutionID(-1),positive(0),negative(0),confirmed(false){}
 };
 
 } // namespace ProblemSolver

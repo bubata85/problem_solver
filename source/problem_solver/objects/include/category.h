@@ -2,13 +2,12 @@
  * ProblemSolver - Self-service problem identification and fixing solution
  *
  *  Copyright (C) 2013 Lyubomir Stankov.
- *  This program is free software: you can redistribute it and/or modify it under the terms of FreeBSD license.
+ *  This program is free software: you can redistribute it and/or modify it under the terms of the FreeBSD license.
  */
 
 #pragma once
 
 #include <string>
-#include <boost/unordered_set.hpp>
 
 namespace ProblemSolver
 {
@@ -29,6 +28,8 @@ struct Category
     std::string description;
     
     int parent;
+    
+    Category():id(-1),parent(-1){}
 };
 
 } // namespace ProblemSolver

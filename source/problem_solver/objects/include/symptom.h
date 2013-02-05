@@ -2,14 +2,7 @@
  * ProblemSolver - Self-service problem identification and fixing solution
  *
  *  Copyright (C) 2013 Lyubomir Stankov.
- *  This program is free software: you can redistribute it and/or modify it under the terms of FreeBSD license.
- */
-
-/**
- * ProblemSolver - Self-service problem identification and fixing solution
- *
- *  Copyright (C) 2013 Lyubomir Stankov.
- *  This program is free software: you can redistribute it and/or modify it under the terms of FreeBSD license.
+ *  This program is free software: you can redistribute it and/or modify it under the terms of the FreeBSD license.
  */
 
 #pragma once
@@ -52,6 +45,9 @@ struct SymptomLink
     int negativeChecks; // how many times was the problem positive but the symptom negative
     
     bool confirmed; // indicates if a specialist has confirmed this relation
+    
+    SymptomLink():id(-1),problemID(-1),symptomID(-1),positiveChecks(0),falsePositiveChecks(0),
+                  negativeChecks(0),confirmed(false){}
 };
 
 } // namespace ProblemSolver

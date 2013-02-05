@@ -123,7 +123,7 @@ include_directories(
 
 
 # contains generic reusable code
-add_library(utils SHARED
+add_library(utils STATIC
     utils/src/utils.cpp
 )
 target_link_libraries(utils
@@ -133,7 +133,7 @@ target_link_libraries(utils
 
 
 # contains different datalayer implementations
-add_library(datalayer SHARED
+add_library(datalayer STATIC
     datalayer/src/memorydatalayer.cpp
     datalayer/src/mysqldatalayer.cpp
     datalayer/src/cachingdatalayer.cpp
@@ -144,10 +144,9 @@ target_link_libraries(datalayer
 
 
 # contains system related code
-add_library(system SHARED
+add_library(system STATIC
     system/src/solvingmachine.cpp
     system/src/systemmanager.cpp
-    system/src/remotesystemmanager.cpp
 )
 target_link_libraries(system
     datalayer
@@ -156,6 +155,7 @@ target_link_libraries(system
 
 # availability server PING tool
 add_executable(solvingserver
+    server/src/remotejsonmanager.cpp
     server/src/solvingserver.cpp
     )
 target_link_libraries (solvingserver
