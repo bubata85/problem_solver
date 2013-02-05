@@ -40,6 +40,10 @@ responsiveness отговоряемост
 Knowledge Management - Управление на знанията
 
 
-Неявното знание (Tacit Knowledge) 
-Изричното Знание (Explicit Knowledge) 
+Tacit Knowledge Неявното знание
+Explicit Knowledge Изричното Знание
 articulate изрази 
+value-laden - натоварени със смисъл
+Semantic mapping Семантичното картографиране
+framework - платформа
+knowledge worker - Работник занимаващ се с знания
