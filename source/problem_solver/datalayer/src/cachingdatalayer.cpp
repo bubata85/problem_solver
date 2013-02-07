@@ -17,46 +17,145 @@ CachingDataLayer::CachingDataLayer(IDataLayer* source, IDataLayer* cache):
     // initial load of all related objects
     
 }
-/*
-bool CachingDataLayer::get(const std::vector<int>& categoryIDs, std::vector<const Category*>& result)
+
+void CachingDataLayer::get(const std::vector<int>& categoryIDs, CategoryMap& result, std::vector<int>* notFound)
 {
-    return templateGet(categoryIDs, result);
+    
+}
+void CachingDataLayer::get(const std::vector<int>& problemIDs, ProblemMap& result, std::vector<int>* notFound)
+{
+    
+}
+void CachingDataLayer::get(const std::vector<int>& symptomIDs, SymptomMap& result, std::vector<int>* notFound)
+{
+    
+}
+void CachingDataLayer::get(const std::vector<int>& solutionIDs, SolutionMap& result, std::vector<int>* notFound)
+{
+    
+}
+void CachingDataLayer::get(const std::vector<int>& investigationIDs, InvestigationMap& result, std::vector<int>* notFound)
+{
+    
+}
+    
+void CachingDataLayer::get(const std::vector<int>& problemIDs, ExtendedProblemMap& result, std::vector<int>* notFound)
+{
+    
+}
+void CachingDataLayer::get(const std::vector<int>& symptomIDs, ExtendedSymptomMap& result, std::vector<int>* notFound)
+{
+    
+}
+void CachingDataLayer::get(const std::vector<int>& solutionIDs, ExtendedSolutionMap& result, std::vector<int>* notFound)
+{
+    
+}
+    
+void CachingDataLayer::getLinksByProblem(int problemID, SymptomsWithSameProblem& result, bool* found)
+{
+    
+}
+void CachingDataLayer::getLinksBySymptom(int symptomID, ProblemsWithSameSymptom& result, bool* found)
+{
+    
+}
+    
+void CachingDataLayer::getLinksByProblem(int problemID, SolutionsWithSameProblem& result, bool* found)
+{
+    
+}
+void CachingDataLayer::getLinksBySolution(int solutionID, ProblemsWithSameSolution& result, bool* found)
+{
+    
 }
 
-bool CachingDataLayer::get(const std::vector<int>& problemIDs, std::vector<const Problem*>& result)
+int CachingDataLayer::add(const Category& category)
 {
-    return templateGet(problemIDs, result);
+    return 0;
+}
+int CachingDataLayer::add(const ExtendedProblem& problem)
+{
+    return 0;
+}
+int CachingDataLayer::add(const ExtendedSymptom& symptom)
+{
+    return 0;
+}
+int CachingDataLayer::add(const ExtendedSolution& solution)
+{
+    return 0;
+}
+int CachingDataLayer::add(const SymptomLink& symptomLink)
+{
+    return 0;
+}
+int CachingDataLayer::add(const SolutionLink& solutionLink)
+{
+    return 0;
+}
+int CachingDataLayer::add(const Investigation& solutionLink)
+{
+    return 0;
 }
 
-bool CachingDataLayer::get(const std::vector<int>& symptomIDs, std::vector<const Symptom*>& result)
+void CachingDataLayer::modify(const Category& category)
 {
-    return templateGet(symptomIDs, result);
+    
+}
+void CachingDataLayer::modify(const ExtendedProblem& problem)
+{
+    
+}
+void CachingDataLayer::modify(const ExtendedSymptom& symptom)
+{
+    
+}
+void CachingDataLayer::modify(const ExtendedSolution& solution)
+{
+    
+}
+void CachingDataLayer::modify(const SymptomLink& symptomLink)
+{
+    
+}
+void CachingDataLayer::modify(const SolutionLink& solutionLink)
+{
+    
+}
+void CachingDataLayer::modify(const Investigation& solutionLink)
+{
+    
 }
 
-bool CachingDataLayer::get(const std::vector<int>& solutionIDs, std::vector<const Solution*>& result)
+void CachingDataLayer::remove(const Category& category)
 {
-    return templateGet(solutionIDs, result);
+    
 }
-
-Category* CachingDataLayer::modify(const Category* category)
+void CachingDataLayer::remove(const Problem& problem)
 {
-    return templateModify(category);
+    
 }
-
-Problem* CachingDataLayer::modify(const Problem* problem)
+void CachingDataLayer::remove(const Symptom& symptom)
 {
-    return templateModify(problem);
+    
 }
-
-Symptom* CachingDataLayer::modify(const Symptom* symptom)
+void CachingDataLayer::remove(const Solution& solution)
 {
-    return templateModify(symptom);
+    
 }
-
-Solution* CachingDataLayer::modify(const Solution* solution)
+void CachingDataLayer::remove(const SymptomLink& symptomLink)
 {
-    return templateModify(solution);
-}*/
+    
+}
+void CachingDataLayer::remove(const SolutionLink& solutionLink)
+{
+    
+}
+void CachingDataLayer::remove(const Investigation& solutionLink)
+{
+    
+}
 
 /**
  * Retrieves objects from the cache, and if they are not found searches for them in the source.

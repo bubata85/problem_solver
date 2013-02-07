@@ -31,11 +31,11 @@ public:
     virtual void get(const std::vector<int>& symptomIDs, ExtendedSymptomMap& result, std::vector<int>* notFound = NULL);
     virtual void get(const std::vector<int>& solutionIDs, ExtendedSolutionMap& result, std::vector<int>* notFound = NULL);
 
-    virtual void getLinksByProblem(int problemID, SymptomsByProblemMap& result, bool* found = NULL);
-    virtual void getLinksBySymptom(int symptomID, ProblemsBySymptomMap& result, bool* found = NULL);
+    virtual void getLinksByProblem(int problemID, SymptomsWithSameProblem& result, bool* found = NULL);
+    virtual void getLinksBySymptom(int symptomID, ProblemsWithSameSymptom& result, bool* found = NULL);
     
-    virtual void getLinksByProblem(int problemID, SolutionsByProblemMap& result, bool* found = NULL);
-    virtual void getLinksBySolution(int solutionID, ProblemsBySolutionMap& result, bool* found = NULL);
+    virtual void getLinksByProblem(int problemID, SolutionsWithSameProblem& result, bool* found = NULL);
+    virtual void getLinksBySolution(int solutionID, ProblemsWithSameSolution& result, bool* found = NULL);
     
 public:
 

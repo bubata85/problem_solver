@@ -35,16 +35,16 @@ typedef boost::unordered_map<int, ExtendedSolution> ExtendedSolutionMap;
 typedef boost::unordered_map<int, Investigation> InvestigationMap;
 
 // all links connected with a certain problem, organized by symptom ID
-typedef boost::unordered_map<int, SymptomLink> SymptomsByProblemMap;
+typedef boost::unordered_map<int, SymptomLink> SymptomsWithSameProblem;
 
 // all links connected with a certain symptom, organized by problem ID
-typedef boost::unordered_map<int, SymptomLink> ProblemsBySymptomMap;
+typedef boost::unordered_map<int, SymptomLink> ProblemsWithSameSymptom;
 
 // all links connected with a certain problem, organized by solution ID
-typedef boost::unordered_map<int, SolutionLink> SolutionsByProblemMap;
+typedef boost::unordered_map<int, SolutionLink> SolutionsWithSameProblem;
 
 // all links connected with a certain solution, organized by problem ID
-typedef boost::unordered_map<int, SolutionLink> ProblemsBySolutionMap;
+typedef boost::unordered_map<int, SolutionLink> ProblemsWithSameSolution;
 
 /**
  * Exception thrown from all DataLayer operations
@@ -91,11 +91,11 @@ public:
      * The found output value will contain true false depending if the object was found
      * If found is NULL, the function will throw if something is not found
      */
-    virtual void getLinksByProblem(int problemID, SymptomsByProblemMap& result, bool* found = NULL) = 0;
-    virtual void getLinksBySymptom(int symptomID, ProblemsBySymptomMap& result, bool* found = NULL) = 0;
+    virtual void getLinksByProblem(int problemID, SymptomsWithSameProblem& result, bool* found = NULL) = 0;
+    virtual void getLinksBySymptom(int symptomID, ProblemsWithSameSymptom& result, bool* found = NULL) = 0;
     
-    virtual void getLinksByProblem(int problemID, SolutionsByProblemMap& result, bool* found = NULL) = 0;
-    virtual void getLinksBySolution(int solutionID, ProblemsBySolutionMap& result, bool* found = NULL) = 0;
+    virtual void getLinksByProblem(int problemID, SolutionsWithSameProblem& result, bool* found = NULL) = 0;
+    virtual void getLinksBySolution(int solutionID, ProblemsWithSameSolution& result, bool* found = NULL) = 0;
     
 };
 

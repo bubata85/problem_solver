@@ -10,106 +10,143 @@
 namespace ProblemSolver
 {
 
-/*
-bool CachingDataLayer::get(const std::vector<int>& categoryIDs, std::vector<const Category*>& result)
+void MemoryDataLayer::get(const std::vector<int>& categoryIDs, CategoryMap& result, std::vector<int>* notFound)
 {
-    return templateGet(categoryIDs, result);
-}
-
-bool CachingDataLayer::get(const std::vector<int>& problemIDs, std::vector<const Problem*>& result)
-{
-    return templateGet(problemIDs, result);
-}
-
-bool CachingDataLayer::get(const std::vector<int>& symptomIDs, std::vector<const Symptom*>& result)
-{
-    return templateGet(symptomIDs, result);
-}
-
-bool CachingDataLayer::get(const std::vector<int>& solutionIDs, std::vector<const Solution*>& result)
-{
-    return templateGet(solutionIDs, result);
-}
-
-Category* CachingDataLayer::modify(const Category* category)
-{
-    return templateModify(category);
-}
-
-Problem* CachingDataLayer::modify(const Problem* problem)
-{
-    return templateModify(problem);
-}
-
-Symptom* CachingDataLayer::modify(const Symptom* symptom)
-{
-    return templateModify(symptom);
-}
-
-Solution* CachingDataLayer::modify(const Solution* solution)
-{
-    return templateModify(solution);
-}*/
-
-/**
- * Retrieves objects from the cache, and if they are not found searches for them in the source.
- * Anything found in the source is saved in cache for later use.
- *//*
-template<class T>
-bool CachingDataLayer::templateGet(const std::vector<int>& ids, std::vector<const T*>& result)
-{
-    // look up what we can from cache
-    if(!_cache->get(ids, result))
-        return false;
     
-    std::vector<int> cacheMissIDs;
-    std::vector<int> cacheMissOriginalIdexes;
-    for(uint i = 0; i < result.size(); ++i)
-    {
-        if(result[i] == NULL)
-        {
-            cacheMissIDs.push_back(ids[i]);
-            cacheMissOriginalIdexes.push_back(i);
-        }
-    }
+}
+void MemoryDataLayer::get(const std::vector<int>& problemIDs, ProblemMap& result, std::vector<int>* notFound)
+{
     
-    // check if we have cache misses
-    if(!cacheMissIDs.empty())
-    {
-        std::vector<const T*> cacheMissObjects;
-        cacheMissObjects.reserve(cacheMissIDs.size());
-        
-        // look up cache misses from source
-        if(!_source->get(cacheMissIDs, cacheMissObjects))
-            return false;
-        
-        //  save anything found back to cache and update the result
-        for(uint i = 0; i < cacheMissObjects.size(); ++i)
-        {
-            if(cacheMissObjects[i] != NULL)
-            {
-                T* cacheUpdate = _cache->modify(cacheMissObjects[i]);
-                if(cacheUpdate == NULL)
-                    return false;
-                
-                result[cacheMissOriginalIdexes[i]] = cacheUpdate;
-            }
-        }
-    }
+}
+void MemoryDataLayer::get(const std::vector<int>& symptomIDs, SymptomMap& result, std::vector<int>* notFound)
+{
     
-    return true;
+}
+void MemoryDataLayer::get(const std::vector<int>& solutionIDs, SolutionMap& result, std::vector<int>* notFound)
+{
+    
+}
+void MemoryDataLayer::get(const std::vector<int>& investigationIDs, InvestigationMap& result, std::vector<int>* notFound)
+{
+    
+}
+    
+void MemoryDataLayer::get(const std::vector<int>& problemIDs, ExtendedProblemMap& result, std::vector<int>* notFound)
+{
+    
+}
+void MemoryDataLayer::get(const std::vector<int>& symptomIDs, ExtendedSymptomMap& result, std::vector<int>* notFound)
+{
+    
+}
+void MemoryDataLayer::get(const std::vector<int>& solutionIDs, ExtendedSolutionMap& result, std::vector<int>* notFound)
+{
+    
+}
+    
+void MemoryDataLayer::getLinksByProblem(int problemID, SymptomsWithSameProblem& result, bool* found)
+{
+    
+}
+void MemoryDataLayer::getLinksBySymptom(int symptomID, ProblemsWithSameSymptom& result, bool* found)
+{
+    
+}
+    
+void MemoryDataLayer::getLinksByProblem(int problemID, SolutionsWithSameProblem& result, bool* found)
+{
+    
+}
+void MemoryDataLayer::getLinksBySolution(int solutionID, ProblemsWithSameSolution& result, bool* found)
+{
+    
 }
 
-template<class T>
-T* CachingDataLayer::templateModify(const T* object)
+int MemoryDataLayer::add(const Category& category)
 {
-    // update the object inside the source
-    T* modifyResult = _source->modify(object);
-    if(modifyResult == NULL)
-        return NULL;
-    
-    return _cache->modify(object);
-}*/
+    return 0;
+}
+int MemoryDataLayer::add(const ExtendedProblem& problem)
+{
+    return 0;
+}
+int MemoryDataLayer::add(const ExtendedSymptom& symptom)
+{
+    return 0;
+}
+int MemoryDataLayer::add(const ExtendedSolution& solution)
+{
+    return 0;
+}
+int MemoryDataLayer::add(const SymptomLink& symptomLink)
+{
+    return 0;
+}
+int MemoryDataLayer::add(const SolutionLink& solutionLink)
+{
+    return 0;
+}
+int MemoryDataLayer::add(const Investigation& solutionLink)
+{
+    return 0;
+}
 
+void MemoryDataLayer::modify(const Category& category)
+{
+    
+}
+void MemoryDataLayer::modify(const ExtendedProblem& problem)
+{
+    
+}
+void MemoryDataLayer::modify(const ExtendedSymptom& symptom)
+{
+    
+}
+void MemoryDataLayer::modify(const ExtendedSolution& solution)
+{
+    
+}
+void MemoryDataLayer::modify(const SymptomLink& symptomLink)
+{
+    
+}
+void MemoryDataLayer::modify(const SolutionLink& solutionLink)
+{
+    
+}
+void MemoryDataLayer::modify(const Investigation& solutionLink)
+{
+    
+}
+
+void MemoryDataLayer::remove(const Category& category)
+{
+    
+}
+void MemoryDataLayer::remove(const Problem& problem)
+{
+    
+}
+void MemoryDataLayer::remove(const Symptom& symptom)
+{
+    
+}
+void MemoryDataLayer::remove(const Solution& solution)
+{
+    
+}
+void MemoryDataLayer::remove(const SymptomLink& symptomLink)
+{
+    
+}
+void MemoryDataLayer::remove(const SolutionLink& solutionLink)
+{
+    
+}
+void MemoryDataLayer::remove(const Investigation& solutionLink)
+{
+    
+}
 
 } // namespace ProblemSolver

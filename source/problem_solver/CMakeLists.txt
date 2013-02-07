@@ -153,7 +153,7 @@ target_link_libraries(system
 )
 
 
-# availability server PING tool
+# JSON server interface for the system
 add_executable(solvingserver
     server/src/remotejsonmanager.cpp
     server/src/solvingserver.cpp
