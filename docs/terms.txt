@@ -47,3 +47,6 @@ value-laden - натоварени със смисъл
 Semantic mapping Семантичното картографиране
 framework - платформа
 knowledge worker - Работник занимаващ се с знания
+tangible - осезаем
+competitive advantage - конкурентно предимство
+workforce - работна сила
