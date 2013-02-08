@@ -7,56 +7,45 @@
 
 #pragma once
 
-#include "solvingmachine.h"
-
-#include <auto_ptr.h>
 #include <vector>
-#include <string>
 
 namespace ProblemSolver
 {
 
+class SystemManager;
+    
 /**
- * This is a remote interface to a system manager that communicates using JSON.
+ * This class groups all functionality connected with making suggestions about how to identify unknown problems
  */
 class RemoteJsonManager
 {
 public:
     
-    RemoteJsonManager(IDataLayer* dataLayer);
-    ~RemoteJsonManager(){};
+    RemoteJsonManager(SystemManager& systemManager);
+    ~RemoteJsonManager(){}
     
 public:
     
-    /**
-     * This is the result of a search
-     */
-    struct SearchResult
-    {
-        std::vector<int> problems;
-        std::vector<int> symptoms;
-        std::vector<int> solutions;
-    };
+    void run(const char* host, int port);
     
 public:
     
-    SearchResult performSearch(const std::string& searchPhrase, int chosenCategory);
-    
-    /**
-     * For all of these it does not matter if the check result has been updated inside the Investigation or not,
-     * in all cases it will be treated as if it was.
-     */
-    void onProblemChecked(int problemID, bool checkResult, const Investigation& investigation);
-    void onSymptomChecked(int symptomID, bool checkResult, const Investigation& investigation);
-    void onSolutionChecked(int solutionID, bool checkResult, const Investigation& investigation);
-    
-    SolvingMachine::Suggestion makeSuggestion(const Investigation& investigation);
-    IDataLayer& getDataLayer();
+    static void stopAll();
     
 private:
     
-    std::auto_ptr<IDataLayer> _dataLayer;
+    void onNewConnection(int clientSocket);
+    std::string processRequest(const std::string& request);
+    void sendResponseAndClose(int clientSocket, const std::string& response);
+    
+private:
+    
+    SystemManager& _systemManager;
 
+private:
+    
+    static bool _stopAllManagers;
+    
 };
 
 } // namespace ProblemSolver
