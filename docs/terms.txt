@@ -6,7 +6,7 @@ Continual service improvement - Постоянно подобряване на услугите
 ITIL Service Management Lifecycle - жизнения цикъл на услугите в ITIL
 
 Event Management - Управление на събитията
-Incident Management - Управление на ицидентите
+Incident Management - Управление на инцидентите
 Request Fulfilment - Изпълнение на заявки
 Problem Management - Управление на проблемите
 Access Management - Управление на достъпа
@@ -35,7 +35,7 @@ deployment разгръщане
 release версия
 tools средства
 coding system система с кодове
-responsiveness отговоряемост
+responsiveness отзивчивостта
 
 Knowledge Management - Управление на знанията
 knowledge management cycle - Цикъл за управление на знанията
