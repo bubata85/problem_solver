@@ -6,7 +6,7 @@ Continual service improvement - Постоянно подобряване на услугите
 ITIL Service Management Lifecycle - жизнения цикъл на услугите в ITIL
 
 Event Management - Управление на събитията
-Incident Management - Управление на ицидентите
+Incident Management - Управление на инцидентите
 Request Fulfilment - Изпълнение на заявки
 Problem Management - Управление на проблемите
 Access Management - Управление на достъпа
@@ -35,10 +35,10 @@ deployment разгръщане
 release версия
 tools средства
 coding system система с кодове
-responsiveness отговоряемост
+responsiveness отзивчивостта
 
 Knowledge Management - Управление на знанията
-
+knowledge management cycle - Цикъл за управление на знанията
 
 Tacit Knowledge Неявното знание
 Explicit Knowledge Изричното Знание
@@ -47,3 +47,23 @@ value-laden - натоварени със смисъл
 Semantic mapping Семантичното картографиране
 framework - платформа
 knowledge worker - Работник занимаващ се с знания
+tangible - осезаем
+competitive advantage - конкурентно предимство
+workforce - работна сила
+codification of knowledge - кодификация на знания
+know-how - ноу-хау
+corporate memory - корпоративната памет
+lessons learned - поуки
+knowledge repository - хранилище на знания
+knowledge refinery - рафинерия на знанията
+front-end нещо с което потребителите взаимодействат директно
+back-end нещо което подпомага front-end без да взаимодейства с потребителя
+notion - идея
+competitive intelligence - конкурентно разузнаване
+competitive success - конкурентоспособност
+knowledge items - елементи от знание
+knowledge objects - обекти от знание
+knowledge product - продукт на знание
+deploy - разгръщам
+generic - с широко приложение
+bussiness processing environment - средата на работа на бизнес
