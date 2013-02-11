@@ -5,49 +5,72 @@
  *  This program is free software: you can redistribute it and/or modify it under the terms of the FreeBSD license.
  */
 
-#pragma once
-
 #include "remotejsonmanager.h"
 #include "systemmanager.h"
+#include "jsonserialization.h"
 
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <errno.h>
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 using namespace boost::property_tree;
 
 namespace ProblemSolver
 {
 
+bool RemoteJsonManager::_stopAllManagers = false;
+    
 RemoteJsonManager::RemoteJsonManager(SystemManager& systemManager):
     _systemManager(systemManager)
 {
 }
 
-void RemoteJsonManager::run(const char* host, int port)
+void RemoteJsonManager::run(const std::string& host, int port)
 {
-    printf("RemoteJsonManager: Starting instance on %s:%d", host, port);
+    printf("RemoteJsonManager: Starting instance on %s:%d\n", host.c_str(), port);
     
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if(serverSocket < 0) 
-        printf("RemoteJsonManager: ERROR opening socket\n");
+    if(serverSocket < 0)
+    {
+        printMessage("RemoteJsonManager: ERROR opening socket");
+        return;
+    }
 
+    int flags = fcntl(serverSocket, F_GETFL, 0);
+    if(flags < 0)
+    {
+        printMessage("RemoteJsonManager: ERROR getting socket options");
+        return;
+    }
+    flags = (flags|O_NONBLOCK);
+    if(fcntl(serverSocket, F_SETFL, flags) != 0)
+    {
+        printMessage("RemoteJsonManager: ERROR setting socket options");
+        return;
+    }
+    
     sockaddr_in serverAddress;
     memset(&serverAddress, 0, sizeof(serverAddress));
     serverAddress.sin_family = AF_INET;
-    serverAddress.sin_addr.s_addr = inet_addr(host);
+    serverAddress.sin_addr.s_addr = inet_addr(host.c_str());
     serverAddress.sin_port = htons(port);
 
     if(bind(serverSocket, (sockaddr*)&serverAddress, sizeof(serverAddress)) < 0)
-        printf("RemoteJsonManager: ERROR binding socket");
+    {
+        printMessage("RemoteJsonManager: ERROR binding socket");
+        return;
+    }
     
     listen(serverSocket,5);
     
-    while(_stopAllManagers)
+    while(!_stopAllManagers)
     {
         int newSocket = accept(serverSocket, NULL, NULL);
         if(newSocket < 0)
@@ -56,7 +79,7 @@ void RemoteJsonManager::run(const char* host, int port)
                 usleep(10000); // sleep 10ms
             else
             {
-                printf("RemoteJsonManager: ERROR during accept");
+                printMessage("RemoteJsonManager: ERROR during accept");
                 break; // exit the server
             }
         }
@@ -66,7 +89,7 @@ void RemoteJsonManager::run(const char* host, int port)
         }
     }
     
-    printf("RemoteJsonManager: Stopping instance on %s:%d", host, port);
+    printf("RemoteJsonManager: Stopping instance on %s:%d\n", host.c_str(), port);
     close(serverSocket);
 }
 
@@ -87,14 +110,16 @@ void RemoteJsonManager::onNewConnection(int clientSocket)
     std::string response;
     
     char buffer[256];
+    int bytesRead = 0;
     
     do
     {
-        int bytesRead = read(clientSocket, buffer, 255);
+        bytesRead = read(clientSocket, buffer, 255);
         if(bytesRead < 0)
         {
-            printf("RemoteJsonManager: ERROR reading request.");
-            sendResponseAndClose(clientSocket, "ERROR reading request");
+            static const std::string error = "RemoteJsonManager: ERROR reading request.";
+            printMessage(error.c_str());
+            sendResponseAndClose(clientSocket, error);
             return;
         }
         
@@ -102,65 +127,31 @@ void RemoteJsonManager::onNewConnection(int clientSocket)
         
         if(fullRequest.size() > 10000)
         {
-            printf("RemoteJsonManager: ERROR too long request.");
-            sendResponseAndClose(clientSocket, "ERROR too long request");
+            static const std::string error = "RemoteJsonManager: ERROR too long request.";
+            printMessage(error.c_str());
+            sendResponseAndClose(clientSocket, error);
             return;
         }
         
     }while(bytesRead == 255);
-    
-    
-    //parse the json
-    std::stringstream jsonStream;
-    jsonStream << fullRequest;
-    ptree jsonTree;
+
     try
     {
-        json_parser::read_json(jsonStream, jsonTree);
+        response = processRequest(fullRequest);
+        
     }
-    catch (json_parser_error& err)
+    catch(BaseException& exception)
     {
-        printf("RemoteJsonManager: ERROR Invalid JSON %s", fullRequest);
-        sendResponseAndClose(clientSocket, "ERROR Invalid JSON");
-        return;
+        response = exception.what();
+        printMessage(response.c_str());
     }
-    
-    try
+    catch(...)
     {
-        json_parser::read_json(jsonStream, jsonTree);
-    }
-    catch (json_parser_error& err)
-    {
-        printf("RemoteJsonManager: ERROR Invalid JSON %s", fullRequest);
-        sendResponseAndClose(clientSocket, "ERROR Invalid JSON");
-        return;
+        response = "Unknown error";
+        printMessage(response.c_str());
     }
     
-/*
-    //populate the request
-    if (tree.get<std::string>("Type", "FastSearch") == "FastSearch")
-    {
-        std::auto_ptr<FastSearchRequest> request(new FastSearchRequest);
-
-        parseFastSearch(tree, *request);
-
-        return request.release();
-    }
-    else
-        throw ServerValidationException("Unknown request type: " + tree.get<std::string>("Type"));
-    
-    
-    
-    
-    
-    
-    std::string response = processRequest()
-    
-    printf("Here is the message: %s\n",buffer);
-    int n = write(newsockfd,"I got your message",18);
-    if (n < 0) error("ERROR writing to socket");
-    close(newsockfd);
-    close(sockfd);*/
+    sendResponseAndClose(clientSocket, response);
 }
 
 /**
@@ -168,7 +159,75 @@ void RemoteJsonManager::onNewConnection(int clientSocket)
  */
 std::string RemoteJsonManager::processRequest(const std::string& request)
 {
+    printf("Processing request: %s\n", request.c_str());
+    std::string result;
     
+    std::vector<std::string> lines;
+    boost::algorithm::split(lines, request, boost::algorithm::is_any_of("\n"));
+
+    // parse headers
+    uint i = 1; // always skip the first line
+    for(; i < lines.size(); ++i)
+    {
+        if(lines[i].find(':') == std::string::npos)
+            break;
+    }
+    
+    std::string requestBody;
+    
+    ++i; // always skip one line after the headers
+    for(; i < lines.size(); ++i)
+    {
+        requestBody.append(lines[i]);
+    }
+    
+    printf("Request Body: %s\n", requestBody.c_str());
+    
+    std::stringstream jsonStream;
+    jsonStream << requestBody;
+    ptree jsonTree;
+    try
+    {
+        json_parser::read_json(jsonStream, jsonTree);
+        
+        std::string type = jsonTree.get<std::string>("RequestType");
+        if(type == "database")
+        {
+            // these requests are linked with get/add/modify/delete
+            std::string subType = jsonTree.get<std::string>("operation");
+            // process the request
+            
+            ExtendedSymptom symptom;
+            symptom.id = 1111;
+            symptom.confirmed = false;
+            symptom.difficulty = difficultyCategoryExpertOnly;
+            symptom.categoryID = 2222;
+            symptom.description = "test description";
+            symptom.name = "test name";
+            symptom.steps.push_back("step1");
+            symptom.steps.push_back("step2");
+            symptom.steps.push_back("step3");
+            symptom.tags.insert("tag1");
+            symptom.tags.insert("tag2");
+            
+            JsonSerialize serialize;
+            serialize.addSymptom(symptom);
+            result = serialize.finish();
+        }
+        else
+        {
+            std::string message = "Unknown RequestType " + type;
+            throw std::runtime_error(message);
+        }
+    }
+    catch (std::runtime_error& err)
+    {
+        std::string message = "RemoteJsonManager: ERROR Invalid JSON - ";
+        message += err.what();
+        throw Exception(message);
+    }
+    
+    return result;
 }
 
 /**
@@ -178,9 +237,17 @@ void RemoteJsonManager::sendResponseAndClose(int clientSocket, const std::string
 {
     int written = write(clientSocket, response.c_str(), response.size());
     if (written < 0)
-        printf("RemoteJsonManager: ERROR sending response %s", response);
+        printf("RemoteJsonManager: ERROR sending response %s\n", response.c_str());
     
     close(clientSocket);
+}
+
+/**
+ * Prints messages
+ */
+void RemoteJsonManager::printMessage(const char* message)
+{
+    printf("%s\n", message);
 }
 
 } // namespace ProblemSolver

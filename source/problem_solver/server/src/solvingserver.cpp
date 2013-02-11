@@ -5,22 +5,85 @@
  *  This program is free software: you can redistribute it and/or modify it under the terms of the FreeBSD license.
  */
 
-#include <stdio.h>
-
-#include "systemmanager.h"
-
 #include "cachingdatalayer.h"
 #include "memorydatalayer.h"
 #include "mysqldatalayer.h"
 
+#include "systemmanager.h"
+#include "remotejsonmanager.h"
+
+#include <stdio.h>
+#include <signal.h>
+#include <boost/program_options.hpp>
+
 using namespace ProblemSolver;
+namespace po = boost::program_options;
+
+/**
+ * Handles CTRL+C signal
+ */
+void interruptHandler(int signal)
+{
+    printf("Caught signal %d\n", signal);
+    RemoteJsonManager::stopAll();
+}
+
+/**
+ * Initializes signal handlers
+ */
+void initHandlers()
+{
+    struct sigaction sigIntHandler;
+
+    sigIntHandler.sa_handler = interruptHandler;
+    sigemptyset(&sigIntHandler.sa_mask);
+    sigIntHandler.sa_flags = 0;
+
+    sigaction(SIGINT, &sigIntHandler, NULL);
+}
+
+#include "boost/property_tree/json_parser.hpp"
+#include "boost/property_tree/info_parser.hpp"
 
 int main(int argc, const char* argv[])
 {
-    SystemManager manager(new CachingDataLayer(new MySqlDataLayer(), new MemoryDataLayer()));
+    initHandlers();
     
+    std::string host;
+    int port;
     
+    po::variables_map optionsMap;
+    try
+    {
+        po::options_description allowedOptions(200, 100);
+        allowedOptions.add_options()
+            ("help,h", "Produce help message.")
+            ("host", po::value<std::string>()->required(), "Required. Server IP")
+            ("port", po::value<int>()->required(), "Required. Server Port");
+
+        po::store(po::parse_command_line(argc, argv, allowedOptions), optionsMap, true);
+        
+        if (optionsMap.count("help") || optionsMap.empty())
+        {
+            std::cout << allowedOptions << "\n";
+            return 1;
+        }
+
+        po::notify(optionsMap);
+        
+        host = optionsMap["host"].as<std::string>();
+        port = optionsMap["port"].as<int>();
+    }
+    catch(std::exception& e)
+    {
+        std::cout << "Error: " << e.what() << "\n";
+        return 1;
+    }
     
-    printf("Hello world!\n");
+    SystemManager systemManager(new CachingDataLayer(new MySqlDataLayer(), new MemoryDataLayer()));
+    
+    RemoteJsonManager remoteJsonManager(systemManager);
+    remoteJsonManager.run(host, port);
+    
     return 0;
 }

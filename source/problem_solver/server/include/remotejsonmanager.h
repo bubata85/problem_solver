@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "baseexception.h"
+
 #include <vector>
 
 namespace ProblemSolver
@@ -26,7 +28,21 @@ public:
     
 public:
     
-    void run(const char* host, int port);
+    /**
+     * Exception thrown from RemoteJsonManager operations
+     */
+    class Exception: public BaseException
+    {
+    public:
+        explicit Exception(const std::string& errorMessage):
+            BaseException(errorMessage){}
+            
+        virtual ExceptionCode getCode() const { return exceptionCodeSystemManager; }
+    };
+    
+public:
+    
+    void run(const std::string& host, int port);
     
 public:
     
@@ -37,6 +53,10 @@ private:
     void onNewConnection(int clientSocket);
     std::string processRequest(const std::string& request);
     void sendResponseAndClose(int clientSocket, const std::string& response);
+    
+private:
+    
+    void printMessage(const char* message);
     
 private:
     
