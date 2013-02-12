@@ -16,6 +16,8 @@ namespace ProblemSolver
 SystemManager::SystemManager(IDataLayer* dataLayer):
     _dataLayer(dataLayer)
 {
+    if(dataLayer == NULL)
+        throw Exception("SystemManager: Cannot use NULL dataLayer");
 }
 
 /**
@@ -40,17 +42,17 @@ void SystemManager::onProblemChecked(int problemID, bool checkResult, int invest
     
     // check if the investigation has positive problem
     if(checkResult == true && investigation.positiveProblem != -1)
-        throw Exception("Investigation already has a positive problem!");
+        throw Exception("SystemManager: Investigation already has a positive problem!");
     
     // check if the investigation has this negative problem
     for(uint i = 0; i < investigation.negativeProblems.size(); ++i)
     {
         if(problemID == investigation.negativeProblems[i])
-            throw Exception("Investigation has already checked this problem!");
+            throw Exception("SystemManager: Investigation has already checked this problem!");
     }
     
     if(problemID == investigation.positiveProblem)
-        throw Exception("Investigation has already checked this problem!");
+        throw Exception("SystemManager: Investigation has already checked this problem!");
     
     // always update positive symptoms, update negative symptoms only if the problem was positive
     if(!investigation.positiveSymptoms.empty() || (checkResult == true && !investigation.negativeSymptoms.empty()))
@@ -121,14 +123,14 @@ void SystemManager::onSymptomChecked(int symptomID, bool checkResult, int invest
     for(uint i = 0; i < investigation.positiveSymptoms.size(); ++i)
     {
         if(symptomID == investigation.positiveSymptoms[i])
-            throw Exception("Investigation has already checked this symptom!");
+            throw Exception("SystemManager: Investigation has already checked this symptom!");
     }
     
     // check if the investigation has this negative symptom
     for(uint i = 0; i < investigation.negativeSymptoms.size(); ++i)
     {
         if(symptomID == investigation.negativeSymptoms[i])
-            throw Exception("Investigation has already checked this symptom!");
+            throw Exception("SystemManager: Investigation has already checked this symptom!");
     }
     
     // always update positive problem, update negative problems only if the symptom was positive
@@ -182,17 +184,17 @@ void SystemManager::onSolutionChecked(int solutionID, bool checkResult, int inve
     
     // check if the investigation has positive solution
     if(checkResult == true && investigation.positiveSolution != -1)
-        throw Exception("Investigation already has a positive solution!");
+        throw Exception("SystemManager: Investigation already has a positive solution!");
     
     // check if the investigation has this as positive solution
     if(solutionID == investigation.positiveSolution)
-        throw Exception("Investigation has already checked this solution!");
+        throw Exception("SystemManager: Investigation has already checked this solution!");
     
     // check if the investigation has this negative solution
     for(uint i = 0; i < investigation.negativeSolutions.size(); ++i)
     {
         if(solutionID == investigation.negativeSolutions[i])
-            throw Exception("Investigation has already checked this solution!");
+            throw Exception("SystemManager: Investigation has already checked this solution!");
     }
     
     // update only when we have a positive problem
@@ -232,7 +234,8 @@ void SystemManager::onSolutionChecked(int solutionID, bool checkResult, int inve
  */
 SolvingMachine::Suggestion SystemManager::makeSuggestion(const Investigation& investigation)
 {
-    return SolvingMachine::makeSuggestion(investigation, *_dataLayer);
+    SolvingMachine machine(*_dataLayer.get());
+    return machine.makeSuggestion(investigation);
 }
 
 /**
@@ -260,7 +263,7 @@ void SystemManager::updateLinkByAction(SymptomLink& link, SymptomLinkAction acti
         link.negativeChecks += 1;
         break;
     default:
-        assert(false && "unknown update symptom link action");
+        throw Exception("SystemManager: Unknown update symptom link action!");
     }
 }
 
@@ -278,7 +281,7 @@ void SystemManager::updateLinkByAction(SolutionLink& link, SolutionLinkAction ac
         link.negative += 1;
         break;
     default:
-        assert(false && "unknown update solution link action");
+        throw Exception("SystemManager: Unknown update solution link action!");
     }
 }
 

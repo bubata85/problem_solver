@@ -22,10 +22,12 @@ namespace ProblemSolver
 struct GenericInfo
 {
     int id; // id of the object
+    int categoryID; // id of the category the object is part of
+    
     DifficultyLevel difficulty; // difficulty level of "completion"
     bool confirmed; // indicates if a specialist has confirmed this object
     
-    GenericInfo():id(-1),difficulty(difficultyUnknown),confirmed(false){}
+    GenericInfo():id(-1),categoryID(0),difficulty(difficultyUnknown),confirmed(false){}
 };
 
 /**
@@ -33,15 +35,11 @@ struct GenericInfo
  */
 struct ExtendedGenericInfo
 {
-    int categoryID; // id of the category the object is part of
-    
     std::string name; // name of the object
     std::string description; // description of the object
     boost::unordered_set<std::string> tags; // tags associated with the object
     
     std::vector<std::string> steps; // steps needed to "complete"
-    
-    ExtendedGenericInfo():categoryID(0){}
 };
 
 } // namespace ProblemSolver

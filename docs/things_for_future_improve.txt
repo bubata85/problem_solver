@@ -1,2 +1,5 @@
 use real logging system
+make multithreaded
+improve suggestion algorithm
+create ready to use adaptors to popular knowledge bases
  

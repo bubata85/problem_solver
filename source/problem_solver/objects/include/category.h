@@ -8,6 +8,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace ProblemSolver
 {
@@ -28,6 +29,7 @@ struct Category
     std::string description;
     
     int parent;
+    std::vector<int> childCategories;
     
     Category():id(-1),parent(-1){}
 };

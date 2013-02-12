@@ -7,19 +7,50 @@
 
 #pragma once
 
+#include "datalayerread.h"
+
 #include <vector>
+#include <boost/unordered_set.hpp>
 
 namespace ProblemSolver
 {
 
-class IDataLayerRead;
-class Investigation;
-    
 /**
  * This class groups all functionality connected with making suggestions about how to identify unknown problems
  */
 class SolvingMachine
 {
+public:
+    
+    /**
+     * If the "highest" reference inside a link is above this number it will be treated as this much,
+     * and the rest of the references will be diminished by a coefficient equal to that needed
+     * to reduce the "highest" reference to this number.
+     * E.g: if MAX_REFERENCES is 100
+     * if we have a link: positive 400, false-positive 200, negative 40
+     * then they will be transformed to: positive 100, false-positive 50, negative 10
+     */
+    static const double MAX_REFERENCES = 100;
+    
+public:
+    
+    SolvingMachine(IDataLayerRead& dataLayer);
+    ~SolvingMachine(){}
+
+public:
+    
+    /**
+     * Exception thrown from SolvingMachine operations
+     */
+    class Exception: public BaseException
+    {
+    public:
+        explicit Exception(const std::string& errorMessage):
+            BaseException(errorMessage){}
+            
+        virtual ExceptionCode getCode() const { return exceptionCodeSolvingMachine; }
+    };
+    
 public:
     
     /**
@@ -40,8 +71,25 @@ public:
     
 public:
     
-    static Suggestion makeSuggestion(const Investigation& Investigation, IDataLayerRead& dataLayer);
+    Suggestion makeSuggestion(const Investigation& Investigation);
 
+private:
+    
+    typedef boost::unordered_set<int> CategoryBranch;
+    CategoryBranch buildCategoryBranch(CategoryBranch partialBranch);
+    void addChilds(int categoryID, CategoryBranch& result, const CategoryMap& allCategories);
+    
+    template< class InputLinks, class OutputObjects>
+    void filterByBranch(const InputLinks& relatedLinks, const CategoryBranch& categoryBranch, OutputObjects& result);
+    
+private:
+    
+    int calculateValue(const Solution& solution, const SolutionLink& link);
+    
+private:
+    
+    IDataLayerRead& _dataLayer;
+    
 };
 
 } // namespace ProblemSolver

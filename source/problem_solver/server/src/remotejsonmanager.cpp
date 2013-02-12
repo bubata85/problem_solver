@@ -194,7 +194,9 @@ std::string RemoteJsonManager::processRequest(const std::string& request)
         if(type == "database")
         {
             // these requests are linked with get/add/modify/delete
-            std::string subType = jsonTree.get<std::string>("operation");
+            //std::string subType = jsonTree.get<std::string>("operation");
+            
+            
             // process the request
             
             ExtendedSymptom symptom;

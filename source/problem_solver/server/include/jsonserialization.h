@@ -31,12 +31,13 @@ public:
 public:
     
     void addSymptom(const ExtendedSymptom& symptom);
+    void addProblem(const ExtendedProblem& problem);
+    void addSolution(const ExtendedSolution& solution);
 
 private:
     
     void startObject();
     void endObject();
-    void addKeyValue(const std::string& key, const std::string& value, bool withComma = true);
     
     template<class T>
     void addGenericInfo(const T& object);
@@ -48,8 +49,9 @@ private:
     {
         _result += "\"";
         _result += key;
-        _result += "\":";
+        _result += "\":\"";
         _result += boost::lexical_cast<std::string>(value);
+        _result += "\"";
         if (withComma)
             _result += ",";
     }
@@ -70,26 +72,12 @@ private:
     }
     
     template <typename T>
-    void iterate(const std::vector<T>& container)
+    void iterate(const T& container)
     {
         bool first = true;
-        BOOST_FOREACH(const T& value, container)
+        BOOST_FOREACH(const typename T::value_type& value, container)
         {
-            _result += first?"\"":"\",";
-            _result += boost::lexical_cast<std::string>(value);
-            first = false;
-        }
-        if(!container.empty())
-            _result += "\"";
-    }
-    
-    template <typename T>
-    void iterate(const boost::unordered_set<T>& container)
-    {
-        bool first = true;
-        BOOST_FOREACH(const T& value, container)
-        {
-            _result += first?"\"":"\",";
+            _result += first?"\"":"\",\"";
             _result += boost::lexical_cast<std::string>(value);
             first = false;
         }

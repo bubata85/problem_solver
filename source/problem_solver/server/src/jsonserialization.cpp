@@ -27,6 +27,16 @@ void JsonSerialize::addSymptom(const ExtendedSymptom& symptom)
     addGenericInfo(symptom);
 }
 
+void JsonSerialize::addProblem(const ExtendedProblem& problem)
+{
+    addGenericInfo(problem);
+}
+
+void JsonSerialize::addSolution(const ExtendedSolution& solution)
+{
+    addGenericInfo(solution);
+}
+
 void JsonSerialize::startObject()
 {
     _result += "{";

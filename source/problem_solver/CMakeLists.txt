@@ -167,17 +167,6 @@ set_target_properties (solvingserver
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/solvingserver)
 
 
-# contains generic reusable code for web
-#add_library(webutils SHARED
-#    utils/mail/src/smtputils.cpp
-#    utils/mail/src/mailmessagedata.cpp
-#    utils/mail/src/mailtexttemplate.cpp
-#)
-#target_link_libraries(webutils
-#    utils
-#    curllib
-#)
-
 
 # FILE COPYING
 

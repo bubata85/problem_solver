@@ -26,8 +26,9 @@ public:
     enum ExceptionCode
     {
         exceptionCodeDataLayer = 0,
-        exceptionCodeSystemManager = 1,
-        exceptionCodeRemoteJsonManager = 2
+        exceptionCodeSolvingMachine = 1,
+        exceptionCodeSystemManager = 2,
+        exceptionCodeRemoteJsonManager = 3
     };
     
 public:
