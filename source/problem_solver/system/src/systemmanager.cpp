@@ -27,7 +27,7 @@ SystemManager::SearchResult SystemManager::performSearch(const std::string& sear
 {
     SearchResult searchResult;
     
-    assert(false && "NYI");
+    /** \todo Lubo: implement performSearch */
     
     return searchResult;
 }

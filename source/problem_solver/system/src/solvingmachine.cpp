@@ -113,7 +113,9 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
             if(utils::contains(investigation.positiveSymptoms, symptom.id) ||
                utils::contains(investigation.negativeSymptoms, symptom.id) ||
                utils::contains(investigation.bannedSymptoms, symptom.id))
+            {
                 continue;
+            }
             
             // add the symptom for verification
             suggestion.symptoms.push_back(symptom.id);
@@ -136,7 +138,9 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
                 // check if the solution is already checked or banned
                 if(utils::contains(investigation.negativeSolutions, solution.id) ||
                    utils::contains(investigation.bannedSolutions, solution.id))
+                {
                     continue;
+                }
                 
                 SolutionLink& link = relatedSolutions[solution.id];
                 
@@ -147,15 +151,70 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
         }
         
     }
+    else if(investigation.positiveSolution != -1)
+    {
+        // in case we have no working solution yet, suggest new ones
+        ProblemsWithSameSolution relatedProblems;
+        _dataLayer.getLinksBySolution(investigation.positiveSolution, relatedProblems);
+
+        ProblemMap relevantProblems;
+        filterByBranch(relatedProblems, fullCategoryBranch, relevantProblems);
+        
+        BOOST_FOREACH(const ProblemMap::value_type& pair, relevantProblems)
+        {
+            const Problem& problem = pair.second;
+            
+            // check if the problem is already checked or banned
+            if(utils::contains(investigation.negativeProblems, problem.id) ||
+               utils::contains(investigation.bannedProblems, problem.id))
+            {
+                continue;
+            }
+            
+            SolutionLink& link = relatedProblems[problem.id];
+            
+            // add the solution for verification
+            suggestion.problems.push_back(problem.id);
+            suggestion.problemValues.push_back(calculateValue(problem, link));
+        }
+    }
     else
     {
-        // we don't know the problem yet, so we must make more complex suggestions
+        /** \todo Lubo: THIS WILL TAKE SOME TIME */
+        // we don't know the problem yet, so we must make a more complex suggestion
         
+        // problems to its positive symptoms
+        boost::unordered_map<int, ProblemValue> problemToValue;
+
+        // positive symptoms to their links
+        boost::unordered_map<int, ProblemsWithSameSymptom> symptomsPositiveToLinks;
+        
+        // negative symptoms to their links
+        boost::unordered_map<int, ProblemsWithSameSymptom> symptomsNegativeToLinks;
+        
+        // retrieve positive links
+        BOOST_FOREACH(const SymptomMap::value_type& pair, positiveSymptoms)
+        {
+            ProblemsWithSameSymptom& relatedProblems = symptomsPositiveToLinks[pair.second.id];
+            _dataLayer.getLinksBySymptom(pair.second.id, relatedProblems);
+            
+            //BOOST_FOREACH(const ProblemsWithSameSymptom::value_type& pair, relatedProblems)
+            {
+                //const SymptomLink& link = pair.second;
+                //ProblemValue& value = problemToValue[link.problemID];
+                
+                
+            }
+        }
+        
+        // retrieve negative links
+        BOOST_FOREACH(const SymptomMap::value_type& pair, negativeSymptoms)
+        {
+            ProblemsWithSameSymptom& relatedProblems = symptomsNegativeToLinks[pair.second.id];
+            _dataLayer.getLinksBySymptom(pair.second.id, relatedProblems);
+        }
         
     }
-    
-    /** \todo Lubo: HANDLE THE REST OF THE CASES! */
-    
     
     return suggestion;
 }
@@ -254,9 +313,68 @@ void SolvingMachine::filterByBranch(const InputLinks& relatedLinks, const Catego
 }
 
 /**
- * Calculates the value of a solution
+ * Calculates the penalty that should be applied based on the difficulty level
  */
-int SolvingMachine::calculateValue(const Solution& solution, const SolutionLink& link)
+double SolvingMachine::getDifficultyPenalty(DifficultyLevel level)
+{
+    // Penalty for gurus:
+    /*
+    static double guruPenalties[] =
+    {
+        1,      // difficultyUnknown
+        1,      // difficultyOneLook
+        0.9875, // difficultyJustByIntuition
+        0.975,  // difficultyJustByLogic
+        0.95,   // difficultySomeExplanation
+        0.925,  // difficultyModerateExplanation
+        0.900,  // difficultyLotsOfExplanation
+        0.875,  // difficultyExplanationMightNotHelp
+        0.825,  // difficultyNeedToHaveDoneIt
+        0.775,  // difficultyManyTimesAndStillNotEasy
+        0.725   // difficultyCategoryExpertOnly
+    };*/
+
+    // Penalty for experts:
+    static double expertPenalties[] =
+    {
+        1,      // difficultyUnknown
+        1,      // difficultyOneLook
+        0.975, // difficultyJustByIntuition
+        0.95,  // difficultyJustByLogic
+        0.90,   // difficultySomeExplanation
+        0.85,  // difficultyModerateExplanation
+        0.80,  // difficultyLotsOfExplanation
+        0.75,  // difficultyExplanationMightNotHelp
+        0.65,  // difficultyNeedToHaveDoneIt
+        0.55,  // difficultyManyTimesAndStillNotEasy
+        0.45   // difficultyCategoryExpertOnly
+    };
+    
+    /*
+    // Penalty for rookies:
+    static double rookiePenalties[] =
+    {
+        1,      // difficultyUnknown
+        1,      // difficultyOneLook
+        0.95, // difficultyJustByIntuition
+        0.90,  // difficultyJustByLogic
+        0.80,   // difficultySomeExplanation
+        0.70,  // difficultyModerateExplanation
+        0.60,  // difficultyLotsOfExplanation
+        0.50,  // difficultyExplanationMightNotHelp
+        0.35,  // difficultyNeedToHaveDoneIt
+        0.20,  // difficultyManyTimesAndStillNotEasy
+        0.05   // difficultyCategoryExpertOnly
+    };*/
+
+    /** \todo Lubo: Users should send their skill level with requests in order to make better suggestions */
+    return expertPenalties[level];
+}
+
+/**
+ * Calculates the value of a solution-problem link
+ */
+int SolvingMachine::calculateValue(const GenericInfo& object, const SolutionLink& link)
 {
     double greatest = std::max(link.positive, link.negative);
     double reduction = 1;
@@ -270,7 +388,7 @@ int SolvingMachine::calculateValue(const Solution& solution, const SolutionLink&
     if(!link.confirmed)
         value /= 2; // apply penalty for non-confirmed links
     
-    if(!solution.confirmed)
+    if(!object.confirmed)
         value /= 2; // apply penalty for non-confirmed solution
         
     return value;

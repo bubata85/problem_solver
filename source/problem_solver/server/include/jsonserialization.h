@@ -13,26 +13,33 @@
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 namespace ProblemSolver
 {
 
-class JsonSerialize
+/**
+ * Class used to serialize ProblemSolver objects in JSON format
+ */
+class JsonSerializer
 {
 public:
     
-    JsonSerialize();
-    ~JsonSerialize(){}
-    
-public:
-    
-    const std::string& finish();
+    JsonSerializer(){}
+    ~JsonSerializer(){}
 
 public:
     
-    void addSymptom(const ExtendedSymptom& symptom);
-    void addProblem(const ExtendedProblem& problem);
-    void addSolution(const ExtendedSolution& solution);
+    std::string serialize(const Category& category);
+    
+    std::string serialize(const ExtendedSymptom& symptom);
+    std::string serialize(const ExtendedProblem& problem);
+    std::string serialize(const ExtendedSolution& solution);
+    
+    std::string serialize(const SymptomLink& symptomLink);
+    std::string serialize(const SolutionLink& solutionLink);
+    
+    std::string serialize(const Investigation& investigation);
 
 private:
     
@@ -44,14 +51,31 @@ private:
     
 private:
     
+    void addValue(const std::string& value)
+    {
+        _result += "\"";
+        _result += value;
+        _result += "\"";
+    }
+    
+    void addValue(bool value)
+    {
+        _result += value ? "true" : "false";
+    }
+    
+    template <typename T>
+    void addValue(const T& value)
+    {
+        _result += boost::lexical_cast<std::string>(value);
+    }
+    
     template <typename T>
     void addKeyValue(const std::string& key, const T& value, bool withComma = true)
     {
         _result += "\"";
         _result += key;
-        _result += "\":\"";
-        _result += boost::lexical_cast<std::string>(value);
-        _result += "\"";
+        _result += "\":";
+        addValue(value);
         if (withComma)
             _result += ",";
     }
@@ -77,17 +101,73 @@ private:
         bool first = true;
         BOOST_FOREACH(const typename T::value_type& value, container)
         {
-            _result += first?"\"":"\",\"";
-            _result += boost::lexical_cast<std::string>(value);
+            if(!first)
+                _result += ",";
+            addValue(value);
             first = false;
         }
-        if(!container.empty())
-            _result += "\"";
     }
     
 private:
     
     std::string _result;
+    
+};
+
+class JsonDeserializer
+{
+public:
+    
+    JsonDeserializer(){}
+    ~JsonDeserializer(){}
+    
+public:
+    
+    Category deserializeCategory(const boost::property_tree::ptree& json);
+    
+    ExtendedSymptom deserializeSymptom(const boost::property_tree::ptree& json);
+    ExtendedProblem deserializeProblem(const boost::property_tree::ptree& json);
+    ExtendedSolution deserializeSolution(const boost::property_tree::ptree& json);
+
+    SymptomLink deserializeSymptomLink(const boost::property_tree::ptree& json);
+    SolutionLink deserializeSolutionLink(const boost::property_tree::ptree& json);
+    
+    Investigation deserializeInvestigation(const boost::property_tree::ptree& json);
+
+private:
+    
+    template<class T>
+    void getGenericInfo(T& object, const boost::property_tree::ptree& json);
+    
+private:
+    
+    template<class T>
+    void getValue(T& value, const std::string& name, const boost::property_tree::ptree& json)
+    {
+        value = json.get<T>(name);
+    }
+    
+    template<class T>
+    void getArray(std::vector<T>& array, const std::string& name, const boost::property_tree::ptree& json)
+    {
+        const boost::property_tree::ptree& node = json.get_child(name);
+
+        BOOST_FOREACH(const boost::property_tree::ptree::value_type& value, node)
+        {
+            array.push_back(value.second.get_value<T>());
+        }
+    }
+    
+    template<class T>
+    void getArray(boost::unordered_set<T>& array, const std::string& name, const boost::property_tree::ptree& json)
+    {
+        const boost::property_tree::ptree& node = json.get_child(name);
+
+        BOOST_FOREACH(const boost::property_tree::ptree::value_type& value, node)
+        {
+            array.insert(value.second.get_value<T>());
+        }
+    }
     
 };
 

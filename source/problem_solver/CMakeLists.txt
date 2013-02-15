@@ -136,6 +136,8 @@ target_link_libraries(utils
 add_library(datalayer STATIC
     datalayer/src/memorydatalayer.cpp
     datalayer/src/mysqldatalayer.cpp
+    datalayer/src/mongodbdatalayer.cpp
+
     datalayer/src/cachingdatalayer.cpp
 )
 target_link_libraries(datalayer

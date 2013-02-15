@@ -15,7 +15,6 @@
 #include <arpa/inet.h>
 #include <errno.h>
 
-#include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -85,6 +84,7 @@ void RemoteJsonManager::run(const std::string& host, int port)
         }
         else
         {
+            /** \todo Lubo: server should be multithreaded some day */
             onNewConnection(newSocket);
         }
     }
@@ -119,7 +119,7 @@ void RemoteJsonManager::onNewConnection(int clientSocket)
         {
             static const std::string error = "RemoteJsonManager: ERROR reading request.";
             printMessage(error.c_str());
-            sendResponseAndClose(clientSocket, error);
+            sendResponseAndClose(clientSocket, error, true);
             return;
         }
         
@@ -129,16 +129,17 @@ void RemoteJsonManager::onNewConnection(int clientSocket)
         {
             static const std::string error = "RemoteJsonManager: ERROR too long request.";
             printMessage(error.c_str());
-            sendResponseAndClose(clientSocket, error);
+            sendResponseAndClose(clientSocket, error, true);
             return;
         }
         
     }while(bytesRead == 255);
 
+    bool error = true;
     try
     {
         response = processRequest(fullRequest);
-        
+        error = false;
     }
     catch(BaseException& exception)
     {
@@ -151,7 +152,7 @@ void RemoteJsonManager::onNewConnection(int clientSocket)
         printMessage(response.c_str());
     }
     
-    sendResponseAndClose(clientSocket, response);
+    sendResponseAndClose(clientSocket, response, error);
 }
 
 /**
@@ -188,14 +189,15 @@ std::string RemoteJsonManager::processRequest(const std::string& request)
     ptree jsonTree;
     try
     {
+        /** \todo Lubo: implement all requests and responses! */
+        
         json_parser::read_json(jsonStream, jsonTree);
         
         std::string type = jsonTree.get<std::string>("RequestType");
         if(type == "database")
         {
             // these requests are linked with get/add/modify/delete
-            //std::string subType = jsonTree.get<std::string>("operation");
-            
+            //std::string operation = jsonTree.get<std::string>("operation");
             
             // process the request
             
@@ -212,9 +214,8 @@ std::string RemoteJsonManager::processRequest(const std::string& request)
             symptom.tags.insert("tag1");
             symptom.tags.insert("tag2");
             
-            JsonSerialize serialize;
-            serialize.addSymptom(symptom);
-            result = serialize.finish();
+            JsonSerializer serializer;
+            result = serializer.serialize(symptom);
         }
         else
         {
@@ -235,9 +236,26 @@ std::string RemoteJsonManager::processRequest(const std::string& request)
 /**
  * Sends a response to the client and closes the socket
  */
-void RemoteJsonManager::sendResponseAndClose(int clientSocket, const std::string& response)
+void RemoteJsonManager::sendResponseAndClose(int clientSocket, const std::string& response, bool error)
 {
-    int written = write(clientSocket, response.c_str(), response.size());
+    int written = 0;
+    if(error)
+    {
+        std::string actualMessage;
+        actualMessage.reserve(response.size() + 10);
+        
+        actualMessage.append("{\"error\": \"");
+        actualMessage.append(response);
+        actualMessage.append("\"}");
+        
+        written = write(clientSocket, actualMessage.c_str(), actualMessage.size());
+    }
+    else
+    {
+        written = write(clientSocket, response.c_str(), response.size());
+    }
+    
+    
     if (written < 0)
         printf("RemoteJsonManager: ERROR sending response %s\n", response.c_str());
     
@@ -250,6 +268,26 @@ void RemoteJsonManager::sendResponseAndClose(int clientSocket, const std::string
 void RemoteJsonManager::printMessage(const char* message)
 {
     printf("%s\n", message);
+}
+
+std::string RemoteJsonManager::performGetOrDelete(bool isGet, const boost::property_tree::ptree& json)
+{
+    std::string response;
+    
+    std::string objectType = json.get<std::string>("objectType");
+    /** \todo Lubo: implement these! */
+    
+    return response;
+}
+
+std::string RemoteJsonManager::performAddOrModify(bool isAdd, const boost::property_tree::ptree& json)
+{
+    std::string response;
+    
+    std::string objectType = json.get<std::string>("objectType");
+    /** \todo Lubo: implement these! */
+    
+    return response;
 }
 
 } // namespace ProblemSolver

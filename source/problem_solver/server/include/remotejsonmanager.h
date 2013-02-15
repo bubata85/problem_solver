@@ -10,6 +10,7 @@
 #include "baseexception.h"
 
 #include <vector>
+#include <boost/property_tree/ptree.hpp>
 
 namespace ProblemSolver
 {
@@ -52,11 +53,16 @@ private:
     
     void onNewConnection(int clientSocket);
     std::string processRequest(const std::string& request);
-    void sendResponseAndClose(int clientSocket, const std::string& response);
+    void sendResponseAndClose(int clientSocket, const std::string& response, bool error);
     
 private:
     
     void printMessage(const char* message);
+    
+private:
+    
+    std::string performGetOrDelete(bool isGet, const boost::property_tree::ptree& json);
+    std::string performAddOrModify(bool isAdd, const boost::property_tree::ptree& json);
     
 private:
     

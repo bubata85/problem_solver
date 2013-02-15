@@ -75,6 +75,16 @@ public:
 
 private:
     
+    /**
+     * Holds information about the value of a problem
+     */
+    struct ProblemValue
+    {
+        std::vector<double> values;
+    };
+    
+private:
+    
     typedef boost::unordered_set<int> CategoryBranch;
     CategoryBranch buildCategoryBranch(CategoryBranch partialBranch);
     void addChilds(int categoryID, CategoryBranch& result, const CategoryMap& allCategories);
@@ -84,7 +94,8 @@ private:
     
 private:
     
-    int calculateValue(const Solution& solution, const SolutionLink& link);
+    double getDifficultyPenalty(DifficultyLevel level);
+    int calculateValue(const GenericInfo& object, const SolutionLink& link);
     
 private:
     
