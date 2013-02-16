@@ -31,6 +31,9 @@ public:
      * then they will be transformed to: positive 100, false-positive 50, negative 10
      */
     static const double MAX_REFERENCES = 100;
+    static const double UNCONFIRMED_PENALTY = 0.5; // penalty applied to links and objects that are not yet confirmed
+    static const double MISSING_SYMPTOM_PENALTY = 0.8; // penalty applied to problems for each missing confirmed symptom
+    static const double MISSING_UNCONFIRMED_SYMPTOM_PENALTY = 0.9; // less restrictive
     
 public:
     
@@ -72,30 +75,38 @@ public:
 public:
     
     Suggestion makeSuggestion(const Investigation& Investigation);
-
-private:
-    
-    /**
-     * Holds information about the value of a problem
-     */
-    struct ProblemValue
-    {
-        std::vector<double> values;
-    };
     
 private:
     
+    // set of all the category IDs that define a working branch
     typedef boost::unordered_set<int> CategoryBranch;
+    
+    // key is symptom ID, value is all the problems linked to the symptom
+    typedef boost::unordered_map<int, ProblemsWithSameSymptom> SymptomToLinks;
+    
+    // key is problem ID, value is all the symptoms linked to the problem
+    typedef boost::unordered_map<int, SymptomsWithSameProblem> ProblemToLinks;
+    
+private:
+    
     CategoryBranch buildCategoryBranch(CategoryBranch partialBranch);
     void addChilds(int categoryID, CategoryBranch& result, const CategoryMap& allCategories);
     
-    template< class InputLinks, class OutputObjects>
-    void filterByBranch(const InputLinks& relatedLinks, const CategoryBranch& categoryBranch, OutputObjects& result);
+    template< class Links, class Objects>
+    void filterByBranch(const Links& relatedLinks, const CategoryBranch& categoryBranch, Objects& result);
+    template<class Objects>
+    void filterByBranch(const CategoryBranch& categoryBranch, Objects& result);
     
 private:
     
     double getDifficultyPenalty(DifficultyLevel level);
+    double calculateAccuracity(int firstReferences, int secondReferences);
+    double calculateReduction(int firstReferences, int secondReferences);
+    double calculateValue(int positiveReferences, int negativeReferences);
+    
     int calculateValue(const GenericInfo& object, const SolutionLink& link);
+    int calculateValue(const Symptom& symptom, const ProblemMap& subjectProblems);
+    int calculateValue(const Problem& problem, const SymptomsWithSameProblem& connectedSymptoms, const SymptomMap& positiveSymptoms);
     
 private:
     

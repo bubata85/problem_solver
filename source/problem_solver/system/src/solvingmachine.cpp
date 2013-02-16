@@ -110,8 +110,8 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
             const Symptom& symptom = pair.second;
             
             // check if the symptom is already checked or banned
-            if(utils::contains(investigation.positiveSymptoms, symptom.id) ||
-               utils::contains(investigation.negativeSymptoms, symptom.id) ||
+            if(positiveSymptoms.find(symptom.id) != positiveSymptoms.end() ||
+               negativeSymptoms.find(symptom.id) != negativeSymptoms.end() ||
                utils::contains(investigation.bannedSymptoms, symptom.id))
             {
                 continue;
@@ -136,7 +136,7 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
                 const Solution& solution = pair.second;
                 
                 // check if the solution is already checked or banned
-                if(utils::contains(investigation.negativeSolutions, solution.id) ||
+                if(negativeSolutions.find(solution.id) != negativeSolutions.end() ||
                    utils::contains(investigation.bannedSolutions, solution.id))
                 {
                     continue;
@@ -165,7 +165,7 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
             const Problem& problem = pair.second;
             
             // check if the problem is already checked or banned
-            if(utils::contains(investigation.negativeProblems, problem.id) ||
+            if(negativeProblems.find(problem.id) != negativeProblems.end() ||
                utils::contains(investigation.bannedProblems, problem.id))
             {
                 continue;
@@ -183,37 +183,113 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
         /** \todo Lubo: THIS WILL TAKE SOME TIME */
         // we don't know the problem yet, so we must make a more complex suggestion
         
-        // problems to its positive symptoms
-        boost::unordered_map<int, ProblemValue> problemToValue;
-
-        // positive symptoms to their links
-        boost::unordered_map<int, ProblemsWithSameSymptom> symptomsPositiveToLinks;
+        // we will load all information that we need
         
-        // negative symptoms to their links
-        boost::unordered_map<int, ProblemsWithSameSymptom> symptomsNegativeToLinks;
+        // these are the problems we are considering for suggestion
+        ProblemMap subjectProblems;
         
-        // retrieve positive links
+        // these are the symptoms we are considering for suggestion
+        SymptomMap subjectSymptoms;
+        
+        // this will hold all symptom-to-problem links by symptom ID
+        SymptomToLinks allSymptomLinks;
+        
+        // this will hold all problem-to-symptom links by problem ID
+        ProblemToLinks allProblemLinks;
+        
+        // this will be used only while retrieving any objects
+        boost::unordered_set<int> aggregationOfObjects;
+        std::vector<int> objectsToBeLoaded;
+        
+        // retrieve symptoms links and aggregate related problems
         BOOST_FOREACH(const SymptomMap::value_type& pair, positiveSymptoms)
         {
-            ProblemsWithSameSymptom& relatedProblems = symptomsPositiveToLinks[pair.second.id];
+            ProblemsWithSameSymptom& relatedProblems = allSymptomLinks[pair.second.id];
             _dataLayer.getLinksBySymptom(pair.second.id, relatedProblems);
             
-            //BOOST_FOREACH(const ProblemsWithSameSymptom::value_type& pair, relatedProblems)
+            // aggregate all related problems
+            BOOST_FOREACH(const ProblemsWithSameSymptom::value_type& pair, relatedProblems)
             {
-                //const SymptomLink& link = pair.second;
-                //ProblemValue& value = problemToValue[link.problemID];
-                
-                
+                aggregationOfObjects.insert(pair.second.problemID);
             }
         }
         
-        // retrieve negative links
-        BOOST_FOREACH(const SymptomMap::value_type& pair, negativeSymptoms)
+        
+        // retrieve the subject problems
+        BOOST_FOREACH(int problemID, aggregationOfObjects)
         {
-            ProblemsWithSameSymptom& relatedProblems = symptomsNegativeToLinks[pair.second.id];
-            _dataLayer.getLinksBySymptom(pair.second.id, relatedProblems);
+            // check if the problem is already checked or banned
+            if(negativeProblems.find(problemID) != negativeProblems.end() ||
+               utils::contains(investigation.bannedProblems, problemID))
+            {
+                continue;
+            }
+            
+            objectsToBeLoaded.push_back(problemID);
         }
         
+        /** \todo Lubo: ALL OF THESE SHOULD FILTER BY HAVING AT LEAST 1 POSITIVE (after denominating) */
+        _dataLayer.get(objectsToBeLoaded, subjectProblems);
+        filterByBranch(fullCategoryBranch, subjectProblems);
+        
+        // clear the buffers
+        aggregationOfObjects.clear();
+        objectsToBeLoaded.clear();
+
+        
+        // retrieve problem links and aggregate related symptoms
+        BOOST_FOREACH(const ProblemMap::value_type& pair, subjectProblems)
+        {
+            SymptomsWithSameProblem& relatedSymptoms = allProblemLinks[pair.second.id];
+            _dataLayer.getLinksByProblem(pair.second.id, relatedSymptoms);
+            
+            // aggregate all related symptoms
+            BOOST_FOREACH(const SymptomsWithSameProblem::value_type& pair, relatedSymptoms)
+            {
+                aggregationOfObjects.insert(pair.second.symptomID);
+            }
+        }
+        
+        
+        // retrieve the subject symptoms
+        BOOST_FOREACH(int symptomID, aggregationOfObjects)
+        {
+            // check if the symptom is already checked or banned
+            if(positiveSymptoms.find(symptomID) != positiveSymptoms.end() ||
+               negativeSymptoms.find(symptomID) != negativeSymptoms.end() ||
+               utils::contains(investigation.bannedSymptoms, symptomID))
+            {
+                continue;
+            }
+            
+            objectsToBeLoaded.push_back(symptomID);
+        }
+        
+        _dataLayer.get(objectsToBeLoaded, subjectSymptoms);
+        filterByBranch(fullCategoryBranch, subjectSymptoms);
+        
+        // clear the buffers
+        aggregationOfObjects.clear();
+        objectsToBeLoaded.clear();
+        
+        
+        // add problems to the suggestion
+        BOOST_FOREACH(const ProblemMap::value_type& pair, subjectProblems)
+        {
+            int problemValue = calculateValue(pair.second, allProblemLinks[pair.second.id], positiveSymptoms);
+            suggestion.problems.push_back(pair.second.id);
+            suggestion.problems.push_back(problemValue);
+        }
+        
+        // add symptoms to the suggestion
+        BOOST_FOREACH(const SymptomMap::value_type& pair, subjectSymptoms)
+        {
+            int symptomValue = calculateValue(pair.second, subjectProblems);
+            suggestion.symptoms.push_back(pair.second.id);
+            suggestion.symptoms.push_back(symptomValue);
+        }
+
+        /** \todo Lubo: This could also suggest solutions without having a positive problem */
     }
     
     return suggestion;
@@ -292,23 +368,38 @@ void SolvingMachine::addChilds(int categoryID, CategoryBranch& result, const Cat
 /**
  * Loads all objects pointed to by the links and filters them by the input branch
  */
-template< class InputLinks, class OutputObjects>
-void SolvingMachine::filterByBranch(const InputLinks& relatedLinks, const CategoryBranch& categoryBranch, OutputObjects& result)
+template< class Links, class Objects>
+void SolvingMachine::filterByBranch(const Links& relatedLinks, const CategoryBranch& categoryBranch, Objects& result)
 {
     std::vector<int> objectIDs;
-    BOOST_FOREACH(const typename InputLinks::value_type& pair, relatedLinks)
+    BOOST_FOREACH(const typename Links::value_type& pair, relatedLinks)
     {
         objectIDs.push_back(pair.first);
     }
     
-    OutputObjects allObjects;
-    _dataLayer.get(objectIDs, allObjects);
+    _dataLayer.get(objectIDs, result);
     
-    BOOST_FOREACH(const typename OutputObjects::value_type& pair, allObjects)
+    filterByBranch(categoryBranch, result);
+}
+
+/**
+ * Filters the objects inside result using the supplied categoryBranch
+ */
+template<class Objects>
+void SolvingMachine::filterByBranch(const CategoryBranch& categoryBranch, Objects& result)
+{
+    typename Objects::const_iterator it = result.begin();
+    while(it != result.end())
     {
-        // add only relevant symptoms
-        if(categoryBranch.find(pair.second.categoryID) != categoryBranch.end())
-            result.insert(pair);
+        if(categoryBranch.find(it->second.categoryID) == categoryBranch.end())
+        {
+            // delete irrelevant objects
+            it = result.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
     }
 }
 
@@ -372,26 +463,145 @@ double SolvingMachine::getDifficultyPenalty(DifficultyLevel level)
 }
 
 /**
+ * Calculates a number between 0 and 100 that represents the accuracy of the references
+ */
+double SolvingMachine::calculateAccuracity(int firstReferences, int secondReferences)
+{
+    double greatest = std::max(firstReferences, secondReferences);
+    if(greatest < MAX_REFERENCES)
+        return 100.*(greatest / MAX_REFERENCES);
+    
+    return 100.;
+}
+
+/**
+ * Calculates a number between 0 and 1 that should be applied to references to be normalized
+ */
+double SolvingMachine::calculateReduction(int firstReferences, int secondReferences)
+{
+    double greatest = std::max(firstReferences, secondReferences);
+    if(greatest > MAX_REFERENCES)
+        return MAX_REFERENCES/greatest;
+    
+    return 0.;
+}
+
+/**
+ * Calculates a value between 0 and 100 representing the connection between the positive and negative references.
+ */
+double SolvingMachine::calculateValue(int positiveReferences, int negativeReferences)
+{
+    double accuracy = calculateAccuracity(positiveReferences, negativeReferences);
+    double reduction = calculateReduction(positiveReferences, negativeReferences);
+    
+    double positive = positiveReferences*reduction;
+    double negative = negativeReferences*reduction;
+    double value = accuracy * (positive / (positive + negative));
+    
+    return value;
+}
+
+/**
  * Calculates the value of a solution-problem link
  */
 int SolvingMachine::calculateValue(const GenericInfo& object, const SolutionLink& link)
 {
-    double greatest = std::max(link.positive, link.negative);
-    double reduction = 1;
-    if(greatest > MAX_REFERENCES)
-        reduction = MAX_REFERENCES/greatest;
-    
-    double positive = link.positive*reduction;
-    double negative = link.negative*reduction;
-    double value = (positive * positive) / (positive + negative);
+    double value = calculateValue(link.positive, link.negative);
+    value *= getDifficultyPenalty(object.difficulty);
     
     if(!link.confirmed)
-        value /= 2; // apply penalty for non-confirmed links
+        value *= UNCONFIRMED_PENALTY; // apply penalty for non-confirmed links
     
     if(!object.confirmed)
-        value /= 2; // apply penalty for non-confirmed solution
+        value *= UNCONFIRMED_PENALTY; // apply penalty for non-confirmed solution
         
     return value;
+}
+
+/**
+ * Calculates the value of a subject symptom
+ * 
+ */
+int SolvingMachine::calculateValue(const Symptom& symptom, const ProblemMap& subjectProblems)
+{
+    /** \todo Lubo: this should also take in account negative symptoms and problems!!! */
+    /** \todo Lubo: implement symptom calculate value!! */
+    return 0;
+}
+
+/**
+ * Calculates the value of a subject problem by the probability it has to be positive
+ */
+int SolvingMachine::calculateValue(const Problem& problem, const SymptomsWithSameProblem& connectedSymptoms, const SymptomMap& positiveSymptoms)
+{
+    /** \todo Lubo: this should also take in account negative symptoms and problems!!! */
+    int valueOfProblem = 0;
+    
+    boost::unordered_set<int> missingSymptoms;
+    BOOST_FOREACH(const SymptomMap::value_type& pair, positiveSymptoms)
+    {
+        missingSymptoms.insert(pair.second.id);
+    }
+    
+    double maxHint = 0;
+    double totalValue = 0;
+    
+    int coveredSymptomsCount = 0;
+    
+    BOOST_FOREACH(const SymptomsWithSameProblem::value_type& pair, connectedSymptoms)
+    {
+        SymptomMap::const_iterator it = positiveSymptoms.find(pair.second.symptomID);
+        if(it == positiveSymptoms.end())
+            continue;
+        
+        ++coveredSymptomsCount;
+        missingSymptoms.erase(pair.second.symptomID);
+        
+        const SymptomLink& link = pair.second;
+        
+        double chanceOfSymptomHintingProblem = calculateValue(link.positiveChecks, link.falsePositiveChecks);
+        double chanceOfProblemCausingSymptom = calculateValue(link.positiveChecks, link.negativeChecks);
+        
+        if(!it->second.confirmed)
+        {
+            chanceOfSymptomHintingProblem *= UNCONFIRMED_PENALTY;
+            chanceOfProblemCausingSymptom *= UNCONFIRMED_PENALTY;
+        }
+        
+        if(!link.confirmed)
+        {
+            chanceOfSymptomHintingProblem *= UNCONFIRMED_PENALTY;
+            chanceOfProblemCausingSymptom *= UNCONFIRMED_PENALTY;
+        }
+        
+        if(chanceOfSymptomHintingProblem > maxHint)
+        {
+            maxHint = chanceOfSymptomHintingProblem;
+        }
+        
+        totalValue += std::max(chanceOfSymptomHintingProblem, chanceOfProblemCausingSymptom);
+    }
+
+    if(coveredSymptomsCount > 2)
+        totalValue /= coveredSymptomsCount;
+    else
+        totalValue = 1;
+    
+    valueOfProblem = maxHint*totalValue;
+    
+    BOOST_FOREACH(int missingSymptomID, missingSymptoms)
+    {
+        SymptomMap::const_iterator it = positiveSymptoms.find(missingSymptomID);
+        if(it->second.confirmed)
+            valueOfProblem *= MISSING_SYMPTOM_PENALTY;
+        else
+            valueOfProblem *= MISSING_UNCONFIRMED_SYMPTOM_PENALTY;
+    }
+    
+    if(!problem.confirmed)
+        valueOfProblem *= UNCONFIRMED_PENALTY;
+    
+    return valueOfProblem;
 }
 
 } // namespace ProblemSolver

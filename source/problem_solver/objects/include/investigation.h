@@ -33,7 +33,7 @@ struct Investigation
     
     std::vector<int> negativeSolutions; // solutions that have been verified as non-working
     std::vector<int> bannedSolutions; // solutions that the user did not wish to verify
-    
+    /** \todo Lubo: ADD CLOSED BOOL */
     Investigation():id(-1),positiveProblem(-1),positiveSolution(-1){}
 };
 

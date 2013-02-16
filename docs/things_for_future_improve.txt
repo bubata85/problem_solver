@@ -2,4 +2,5 @@ use real logging system
 make multithreaded
 improve suggestion algorithm
 create ready to use adaptors to popular knowledge bases
- 
+keep track of symptom combinations (e.g. if one symptom combined with another symptom has different values ralated with a problem)
+user initiative for doing extra work on investigations (will increase KB accuracy)

@@ -61,6 +61,8 @@ public:
      * For all of these it does not matter if the check result has been updated inside the Investigation or not,
      * in all cases it will be treated as if it was.
      */
+    /** \todo Lubo: links updated by events must adapt values so that they always have a chance to turn upside down given time */
+    /** \todo Lubo: automatically return suggestion? */
     void onProblemChecked(int problemID, bool checkResult, int investigationID);
     void onSymptomChecked(int symptomID, bool checkResult, int investigationID);
     void onSolutionChecked(int solutionID, bool checkResult, int investigationID);
