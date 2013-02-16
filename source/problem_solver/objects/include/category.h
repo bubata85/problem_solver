@@ -29,7 +29,7 @@ struct Category
     std::string description;
     
     int parent;
-    std::vector<int> childCategories;
+    std::vector<int> childs;
     
     Category():id(-1),parent(-1){}
 };
