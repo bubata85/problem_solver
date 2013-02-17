@@ -25,31 +25,31 @@ public:
 public:
     
     /** \todo Lubo: implement the mongoDB storage! */
-    virtual void get(const std::vector<int>& categoryIDs, CategoryMap& result, std::vector<int>* notFound = NULL);
-    virtual void get(const std::vector<int>& problemIDs, ProblemMap& result, std::vector<int>* notFound = NULL);
-    virtual void get(const std::vector<int>& symptomIDs, SymptomMap& result, std::vector<int>* notFound = NULL);
-    virtual void get(const std::vector<int>& solutionIDs, SolutionMap& result, std::vector<int>* notFound = NULL);
-    virtual void get(const std::vector<int>& investigationIDs, InvestigationMap& result, std::vector<int>* notFound = NULL);
+    virtual void get(const std::vector<Identifier>& categoryIDs, CategoryMap& result, std::vector<Identifier>* notFound = NULL);
+    virtual void get(const std::vector<Identifier>& problemIDs, ProblemMap& result, std::vector<Identifier>* notFound = NULL);
+    virtual void get(const std::vector<Identifier>& symptomIDs, SymptomMap& result, std::vector<Identifier>* notFound = NULL);
+    virtual void get(const std::vector<Identifier>& solutionIDs, SolutionMap& result, std::vector<Identifier>* notFound = NULL);
+    virtual void get(const std::vector<Identifier>& investigationIDs, InvestigationMap& result, std::vector<Identifier>* notFound = NULL);
 
-    virtual void get(const std::vector<int>& problemIDs, ExtendedProblemMap& result, std::vector<int>* notFound = NULL);
-    virtual void get(const std::vector<int>& symptomIDs, ExtendedSymptomMap& result, std::vector<int>* notFound = NULL);
-    virtual void get(const std::vector<int>& solutionIDs, ExtendedSolutionMap& result, std::vector<int>* notFound = NULL);
+    virtual void get(const std::vector<Identifier>& problemIDs, ExtendedProblemMap& result, std::vector<Identifier>* notFound = NULL);
+    virtual void get(const std::vector<Identifier>& symptomIDs, ExtendedSymptomMap& result, std::vector<Identifier>* notFound = NULL);
+    virtual void get(const std::vector<Identifier>& solutionIDs, ExtendedSolutionMap& result, std::vector<Identifier>* notFound = NULL);
 
-    virtual void getLinksByProblem(int problemID, SymptomsWithSameProblem& result, bool* found = NULL);
-    virtual void getLinksBySymptom(int symptomID, ProblemsWithSameSymptom& result, bool* found = NULL);
+    virtual void getLinksByProblem(Identifier problemID, SymptomsWithSameProblem& result, bool* found = NULL);
+    virtual void getLinksBySymptom(Identifier symptomID, ProblemsWithSameSymptom& result, bool* found = NULL);
     
-    virtual void getLinksByProblem(int problemID, SolutionsWithSameProblem& result, bool* found = NULL);
-    virtual void getLinksBySolution(int solutionID, ProblemsWithSameSolution& result, bool* found = NULL);
+    virtual void getLinksByProblem(Identifier problemID, SolutionsWithSameProblem& result, bool* found = NULL);
+    virtual void getLinksBySolution(Identifier solutionID, ProblemsWithSameSolution& result, bool* found = NULL);
     
 public:
 
-    virtual int add(const Category& category);
-    virtual int add(const ExtendedProblem& problem);
-    virtual int add(const ExtendedSymptom& symptom);
-    virtual int add(const ExtendedSolution& solution);
-    virtual int add(const SymptomLink& symptomLink);
-    virtual int add(const SolutionLink& solutionLink);
-    virtual int add(const Investigation& solutionLink);
+    virtual Identifier add(const Category& category);
+    virtual Identifier add(const ExtendedProblem& problem);
+    virtual Identifier add(const ExtendedSymptom& symptom);
+    virtual Identifier add(const ExtendedSolution& solution);
+    virtual Identifier add(const SymptomLink& symptomLink);
+    virtual Identifier add(const SolutionLink& solutionLink);
+    virtual Identifier add(const Investigation& solutionLink);
 
     virtual void modify(const Category& category);
     virtual void modify(const ExtendedProblem& problem);
@@ -70,10 +70,10 @@ public:
 private:
     
     template<class T>
-    void templateGet(const std::vector<int>& ids, boost::unordered_map<int, T>& result, std::vector<int>* notFound);
+    void templateGet(const std::vector<Identifier>& ids, boost::unordered_map<Identifier, T>& result, std::vector<Identifier>* notFound);
     
     template<class T>
-    int templateAdd(const T& object);
+    Identifier templateAdd(const T& object);
     
     template<class T>
     void templateModify(const T& object);

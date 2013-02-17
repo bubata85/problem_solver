@@ -202,10 +202,10 @@ std::string RemoteJsonManager::processRequest(const std::string& request)
             // process the request
             
             ExtendedSymptom symptom;
-            symptom.id = 1111;
+            symptom.id = "symptomKey";
             symptom.confirmed = false;
             symptom.difficulty = difficultyCategoryExpertOnly;
-            symptom.categoryID = 2222;
+            symptom.categoryID = "categoryKey";
             symptom.description = "test description";
             symptom.name = "test name";
             symptom.steps.push_back("step1");

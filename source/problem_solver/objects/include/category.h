@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <string>
+#include "identifier.h"
+
 #include <vector>
 
 namespace ProblemSolver
@@ -24,14 +25,12 @@ class Problem;
  */
 struct Category
 {
-    int id;
+    Identifier id;
     std::string name;
     std::string description;
     
-    int parent;
-    std::vector<int> childs;
-    
-    Category():id(-1),parent(-1){}
+    Identifier parent; // if empty this is a root
+    std::vector<Identifier> childs; // contains all children of this category
 };
 
 } // namespace ProblemSolver

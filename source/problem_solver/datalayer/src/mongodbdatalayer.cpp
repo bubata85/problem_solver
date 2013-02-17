@@ -10,85 +10,85 @@
 namespace ProblemSolver
 {
 
-void MongoDbDataLayer::get(const std::vector<int>& categoryIDs, CategoryMap& result, std::vector<int>* notFound)
+void MongoDbDataLayer::get(const std::vector<Identifier>& categoryIDs, CategoryMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MongoDbDataLayer::get(const std::vector<int>& problemIDs, ProblemMap& result, std::vector<int>* notFound)
+void MongoDbDataLayer::get(const std::vector<Identifier>& problemIDs, ProblemMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MongoDbDataLayer::get(const std::vector<int>& symptomIDs, SymptomMap& result, std::vector<int>* notFound)
+void MongoDbDataLayer::get(const std::vector<Identifier>& symptomIDs, SymptomMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MongoDbDataLayer::get(const std::vector<int>& solutionIDs, SolutionMap& result, std::vector<int>* notFound)
+void MongoDbDataLayer::get(const std::vector<Identifier>& solutionIDs, SolutionMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MongoDbDataLayer::get(const std::vector<int>& investigationIDs, InvestigationMap& result, std::vector<int>* notFound)
-{
-    
-}
-    
-void MongoDbDataLayer::get(const std::vector<int>& problemIDs, ExtendedProblemMap& result, std::vector<int>* notFound)
-{
-    
-}
-void MongoDbDataLayer::get(const std::vector<int>& symptomIDs, ExtendedSymptomMap& result, std::vector<int>* notFound)
-{
-    
-}
-void MongoDbDataLayer::get(const std::vector<int>& solutionIDs, ExtendedSolutionMap& result, std::vector<int>* notFound)
+void MongoDbDataLayer::get(const std::vector<Identifier>& investigationIDs, InvestigationMap& result, std::vector<Identifier>* notFound)
 {
     
 }
     
-void MongoDbDataLayer::getLinksByProblem(int problemID, SymptomsWithSameProblem& result, bool* found)
+void MongoDbDataLayer::get(const std::vector<Identifier>& problemIDs, ExtendedProblemMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MongoDbDataLayer::getLinksBySymptom(int symptomID, ProblemsWithSameSymptom& result, bool* found)
+void MongoDbDataLayer::get(const std::vector<Identifier>& symptomIDs, ExtendedSymptomMap& result, std::vector<Identifier>* notFound)
+{
+    
+}
+void MongoDbDataLayer::get(const std::vector<Identifier>& solutionIDs, ExtendedSolutionMap& result, std::vector<Identifier>* notFound)
 {
     
 }
     
-void MongoDbDataLayer::getLinksByProblem(int problemID, SolutionsWithSameProblem& result, bool* found)
+void MongoDbDataLayer::getLinksByProblem(Identifier problemID, SymptomsWithSameProblem& result, bool* found)
 {
     
 }
-void MongoDbDataLayer::getLinksBySolution(int solutionID, ProblemsWithSameSolution& result, bool* found)
+void MongoDbDataLayer::getLinksBySymptom(Identifier symptomID, ProblemsWithSameSymptom& result, bool* found)
+{
+    
+}
+    
+void MongoDbDataLayer::getLinksByProblem(Identifier problemID, SolutionsWithSameProblem& result, bool* found)
+{
+    
+}
+void MongoDbDataLayer::getLinksBySolution(Identifier solutionID, ProblemsWithSameSolution& result, bool* found)
 {
     
 }
 
-int MongoDbDataLayer::add(const Category& category)
+Identifier MongoDbDataLayer::add(const Category& category)
 {
-    return 0;
+    return "";
 }
-int MongoDbDataLayer::add(const ExtendedProblem& problem)
+Identifier MongoDbDataLayer::add(const ExtendedProblem& problem)
 {
-    return 0;
+    return "";
 }
-int MongoDbDataLayer::add(const ExtendedSymptom& symptom)
+Identifier MongoDbDataLayer::add(const ExtendedSymptom& symptom)
 {
-    return 0;
+    return "";
 }
-int MongoDbDataLayer::add(const ExtendedSolution& solution)
+Identifier MongoDbDataLayer::add(const ExtendedSolution& solution)
 {
-    return 0;
+    return "";
 }
-int MongoDbDataLayer::add(const SymptomLink& symptomLink)
+Identifier MongoDbDataLayer::add(const SymptomLink& symptomLink)
 {
-    return 0;
+    return "";
 }
-int MongoDbDataLayer::add(const SolutionLink& solutionLink)
+Identifier MongoDbDataLayer::add(const SolutionLink& solutionLink)
 {
-    return 0;
+    return "";
 }
-int MongoDbDataLayer::add(const Investigation& solutionLink)
+Identifier MongoDbDataLayer::add(const Investigation& solutionLink)
 {
-    return 0;
+    return "";
 }
 
 void MongoDbDataLayer::modify(const Category& category)

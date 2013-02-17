@@ -7,6 +7,9 @@
 
 #include "systemmanager.h"
 
+#include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
+
 namespace ProblemSolver
 {
 
@@ -23,11 +26,33 @@ SystemManager::SystemManager(IDataLayer* dataLayer):
 /**
  * Searches for all problems symptoms and solutions that match the search phrase and their
  */
-SystemManager::SearchResult SystemManager::performSearch(const std::string& searchPhrase, int chosenCategory)
+SystemManager::SearchResult SystemManager::performSearch(const std::string& searchPhrase)
 {
+    /** \todo Lubo: include a category branch in the search! */
+    
     SearchResult searchResult;
     
-    /** \todo Lubo: implement performSearch */
+    std::vector<std::string> inputWords;
+    boost::split(inputWords, searchPhrase, boost::is_any_of(" "));
+    
+    std::vector<std::string> searchWords;
+    BOOST_FOREACH(std::string& word, inputWords)
+    {
+        if(word.size() > 2)
+        {
+            boost::algorithm::to_lower(word);
+            searchWords.push_back(word);
+        }
+    }
+    
+    // search through all symptoms
+    populateSearchResult<ExtendedSymptomMap>(searchWords, searchResult.symptoms, searchResult.symptomRelevance);
+    
+    // search through all problems
+    populateSearchResult<ExtendedProblemMap>(searchWords, searchResult.problems, searchResult.problemRelevance);
+    
+    // search through all solutions
+    populateSearchResult<ExtendedSolutionMap>(searchWords, searchResult.solutions, searchResult.solutionRelevance);
     
     return searchResult;
 }
@@ -36,12 +61,12 @@ SystemManager::SearchResult SystemManager::performSearch(const std::string& sear
  * This function should be called every time a new problem has been checked in an investigation.
  * It will update the investigation and save any related information.
  */
-void SystemManager::onProblemChecked(int problemID, bool checkResult, int investigationID)
+void SystemManager::onProblemChecked(CIdentifier problemID, bool checkResult, CIdentifier investigationID)
 {
     Investigation investigation = getInvestigation(investigationID);
     
     // check if the investigation has positive problem
-    if(checkResult == true && investigation.positiveProblem != -1)
+    if(checkResult == true && !investigation.positiveProblem.empty())
         throw Exception("SystemManager: Investigation already has a positive problem!");
     
     // check if the investigation has this negative problem
@@ -76,15 +101,15 @@ void SystemManager::onProblemChecked(int problemID, bool checkResult, int invest
     }
     
     // solutions links are only updated when we have a problem
-    if(checkResult == true && (investigation.positiveSolution != -1 || !investigation.negativeSolutions.empty()))
+    if(checkResult == true && (!investigation.positiveSolution.empty() || !investigation.negativeSolutions.empty()))
     {
         SolutionsWithSameProblem relatedSolutions;
         _dataLayer->getLinksByProblem(problemID, relatedSolutions);
         
         // increment the positive solution
-        if(investigation.positiveSolution != -1)
+        if(!investigation.positiveSolution.empty())
         {
-            std::vector<int> positiveSolution;
+            std::vector<Identifier> positiveSolution;
             positiveSolution.push_back(investigation.positiveSolution);
             updateLinks(true, problemID, positiveSolution, relatedSolutions, solutionLinkAddPositive);
         }
@@ -115,7 +140,7 @@ void SystemManager::onProblemChecked(int problemID, bool checkResult, int invest
  * This function should be called every time a new symptom has been checked in an investigation.
  * It will update the investigation and save any related information.
  */
-void SystemManager::onSymptomChecked(int symptomID, bool checkResult, int investigationID)
+void SystemManager::onSymptomChecked(CIdentifier symptomID, bool checkResult, CIdentifier investigationID)
 {
     Investigation investigation = getInvestigation(investigationID);
     
@@ -134,14 +159,14 @@ void SystemManager::onSymptomChecked(int symptomID, bool checkResult, int invest
     }
     
     // always update positive problem, update negative problems only if the symptom was positive
-    if(investigation.positiveProblem != -1 || (checkResult == true && !investigation.negativeProblems.empty()))
+    if(!investigation.positiveProblem.empty() || (checkResult == true && !investigation.negativeProblems.empty()))
     {
         ProblemsWithSameSymptom relatedProblems;
         _dataLayer->getLinksBySymptom(symptomID, relatedProblems);
         
-        if(investigation.positiveProblem != -1)
+        if(!investigation.positiveProblem.empty())
         {
-            std::vector<int> positiveProblem;
+            std::vector<Identifier> positiveProblem;
             positiveProblem.push_back(investigation.positiveProblem);
 
             // increment the positive/negative value of the link to the positive problem
@@ -178,12 +203,12 @@ void SystemManager::onSymptomChecked(int symptomID, bool checkResult, int invest
  * This function should be called every time a new solution has been checked in an investigation.
  * It will update the investigation and save any related information.
  */
-void SystemManager::onSolutionChecked(int solutionID, bool checkResult, int investigationID)
+void SystemManager::onSolutionChecked(CIdentifier solutionID, bool checkResult, CIdentifier investigationID)
 {
     Investigation investigation = getInvestigation(investigationID);
     
     // check if the investigation has positive solution
-    if(checkResult == true && investigation.positiveSolution != -1)
+    if(checkResult == true && !investigation.positiveSolution.empty())
         throw Exception("SystemManager: Investigation already has a positive solution!");
     
     // check if the investigation has this as positive solution
@@ -198,12 +223,12 @@ void SystemManager::onSolutionChecked(int solutionID, bool checkResult, int inve
     }
     
     // update only when we have a positive problem
-    if(investigation.positiveProblem != -1)
+    if(!investigation.positiveProblem.empty())
     {
         ProblemsWithSameSolution relatedProblems;
         _dataLayer->getLinksBySolution(solutionID, relatedProblems);
         
-        std::vector<int> positiveProblem;
+        std::vector<Identifier> positiveProblem;
         positiveProblem.push_back(investigation.positiveProblem);
 
         // increment the positive/negative value of the link to the positive problem
@@ -291,13 +316,13 @@ void SystemManager::updateLinkByAction(SolutionLink& link, SolutionLinkAction ac
  * If byProblem is true then relatedID will be a problemID and the map will contain symptomIDs.
  * If it is false then it will be vice-versa.
  */
-void SystemManager::updateLinks(bool byProblem, int relatedID, const std::vector<int>& inputLinks,
-                                boost::unordered_map<int, SymptomLink>& allLinks, SymptomLinkAction action)
+void SystemManager::updateLinks(bool byProblem, CIdentifier relatedID, const std::vector<Identifier>& inputLinks,
+                                boost::unordered_map<Identifier, SymptomLink>& allLinks, SymptomLinkAction action)
 {
     // iterate the inputLink
     for(uint i = 0; i < inputLinks.size(); ++i)
     {
-        boost::unordered_map<int, SymptomLink>::iterator link = allLinks.find(inputLinks[i]);
+        boost::unordered_map<Identifier, SymptomLink>::iterator link = allLinks.find(inputLinks[i]);
         if(link == allLinks.end())
         {
             // this is a new link
@@ -337,13 +362,13 @@ void SystemManager::updateLinks(bool byProblem, int relatedID, const std::vector
  * If byProblem is true then relatedID will be a problemID and the map will contain solutionIDs.
  * If it is false then it will be vice-versa.
  */
-void SystemManager::updateLinks(bool byProblem, int relatedID, const std::vector<int>& inputLinks,
-                                boost::unordered_map<int, SolutionLink>& allLinks, SolutionLinkAction action)
+void SystemManager::updateLinks(bool byProblem, CIdentifier relatedID, const std::vector<Identifier>& inputLinks,
+                                boost::unordered_map<Identifier, SolutionLink>& allLinks, SolutionLinkAction action)
 {
     // iterate the inputLink
     for(uint i = 0; i < inputLinks.size(); ++i)
     {
-        boost::unordered_map<int, SolutionLink>::iterator link = allLinks.find(inputLinks[i]);
+        boost::unordered_map<Identifier, SolutionLink>::iterator link = allLinks.find(inputLinks[i]);
         if(link == allLinks.end())
         {
             // this is a new link
@@ -380,15 +405,43 @@ void SystemManager::updateLinks(bool byProblem, int relatedID, const std::vector
 /**
  * Returns the investigation that corresponds to the supplied ID
  */
-Investigation SystemManager::getInvestigation(int investigationID)
+Investigation SystemManager::getInvestigation(CIdentifier investigationID)
 {
-    std::vector<int> ids;
+    std::vector<Identifier> ids;
     ids.push_back(investigationID);
     
     InvestigationMap investigationMap;
     _dataLayer->get(ids, investigationMap);
     
     return investigationMap.begin()->second;
+}
+
+/**
+ * Populates the provided vectors with the IDs and relevance of all objects of type T that have at least
+ * one tag matching the input search words.
+ */
+template<class T>
+void SystemManager::populateSearchResult(const std::vector<std::string> searchWords, std::vector<Identifier>& objectIDs, std::vector<int>& objectRelevance)
+{
+    // search through all objects
+    T allObjects;
+    _dataLayer->get(std::vector<Identifier>(), allObjects);
+    
+    BOOST_FOREACH(typename T::value_type& pair, allObjects)
+    {
+        int matchingWords = 0;
+        BOOST_FOREACH(const std::string& searchWord, searchWords)
+        {
+            if(pair.second.tags.find(searchWord) != pair.second.tags.end())
+                ++matchingWords;
+        }
+        
+        if(matchingWords > 0)
+        {
+            objectIDs.push_back(pair.second.id);
+            objectRelevance.push_back(100*((double)matchingWords / (double)searchWords.size()));
+        }
+    }
 }
     
 } // namespace ProblemSolver

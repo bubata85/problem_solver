@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "identifier.h"
+
 #include <vector>
 
 namespace ProblemSolver
@@ -18,24 +20,24 @@ namespace ProblemSolver
  */
 struct Investigation
 {
-    int id; // id in the database
+    Identifier id; // id in the database
     bool closed; // whether this investigation is no longer relevant
     
     // keep in mind you could have a solution before identifying the problem!
-    int positiveProblem; // if this is >= 0 it will mean the problem causing the symptoms has been identified
-    int positiveSolution; // if this is >= 0 it will mean the solution that fixes the problem has been identified
+    Identifier positiveProblem; // if this is empty it will mean the problem causing the symptoms has been identified
+    Identifier positiveSolution; // if this is empty it will mean the solution that fixes the problem has been identified
     
-    std::vector<int> positiveSymptoms; // symptoms that have been verified as positive
-    std::vector<int> negativeSymptoms; // symptoms that have been verified as negative
-    std::vector<int> bannedSymptoms; // symptoms that the user did not wish to verify
+    std::vector<Identifier> positiveSymptoms; // symptoms that have been verified as positive
+    std::vector<Identifier> negativeSymptoms; // symptoms that have been verified as negative
+    std::vector<Identifier> bannedSymptoms; // symptoms that the user did not wish to verify
     
-    std::vector<int> negativeProblems; // problems that have been verified as negative
-    std::vector<int> bannedProblems; // problems that the user did not wish to verify
+    std::vector<Identifier> negativeProblems; // problems that have been verified as negative
+    std::vector<Identifier> bannedProblems; // problems that the user did not wish to verify
     
-    std::vector<int> negativeSolutions; // solutions that have been verified as non-working
-    std::vector<int> bannedSolutions; // solutions that the user did not wish to verify
+    std::vector<Identifier> negativeSolutions; // solutions that have been verified as non-working
+    std::vector<Identifier> bannedSolutions; // solutions that the user did not wish to verify
 
-    Investigation():id(-1), closed(false), positiveProblem(-1),positiveSolution(-1){}
+    Investigation():closed(false){}
 };
 
 } // namespace ProblemSolver

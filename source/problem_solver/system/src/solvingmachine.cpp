@@ -65,11 +65,11 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
     
     Problem positiveProblem;
     
-    if(investigation.positiveProblem != -1)
+    if(!investigation.positiveProblem.empty())
     {
         // look up the positive problem
         ProblemMap positiveProblems;
-        std::vector<int> positiveID;
+        std::vector<Identifier> positiveID;
         positiveID.push_back(investigation.positiveProblem);
         
         _dataLayer.get(positiveID, positiveProblems);
@@ -80,11 +80,11 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
     
     Solution positiveSolution;
     
-    if(investigation.positiveSolution != -1)
+    if(!investigation.positiveSolution.empty())
     {
         // look up the positive solution
         SolutionMap positiveSolutions;
-        std::vector<int> positiveID;
+        std::vector<Identifier> positiveID;
         positiveID.push_back(investigation.positiveSolution);
         
         _dataLayer.get(positiveID, positiveSolutions);
@@ -95,7 +95,7 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
     
     CategoryBranch fullCategoryBranch = buildCategoryBranch(partialCategoryBranch);
     
-    if(investigation.positiveProblem != -1)
+    if(!investigation.positiveProblem.empty())
     {
         // handle the case where we have already identified the problem
         SymptomsWithSameProblem relatedSymptoms;
@@ -122,7 +122,7 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
             suggestion.symptomValues.push_back(0); // static 0 as these are just for statistics!
         }
         
-        if(investigation.positiveSolution == -1)
+        if(!investigation.positiveSolution.empty())
         {
             // in case we have no working solution yet, suggest new ones
             SolutionsWithSameProblem relatedSolutions;
@@ -151,7 +151,7 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
         }
         
     }
-    else if(investigation.positiveSolution != -1)
+    else if(!investigation.positiveSolution.empty())
     {
         // in case we have no working solution yet, suggest new ones
         ProblemsWithSameSolution relatedProblems;
@@ -180,7 +180,6 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
     }
     else
     {
-        /** \todo Lubo: THIS WILL TAKE SOME TIME */
         // we don't know the problem yet, so we must make a more complex suggestion
         
         // we will load all information that we need
@@ -198,8 +197,8 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
         ProblemToLinks allProblemLinks;
         
         // this will be used only while retrieving any objects
-        boost::unordered_set<int> aggregationOfObjects;
-        std::vector<int> objectsToBeLoaded;
+        boost::unordered_set<Identifier> aggregationOfObjects;
+        std::vector<Identifier> objectsToBeLoaded;
         
         // retrieve symptoms links and aggregate related problems
         BOOST_FOREACH(const SymptomMap::value_type& pair, positiveSymptoms)
@@ -216,7 +215,7 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
         
         
         // retrieve the subject problems
-        BOOST_FOREACH(int problemID, aggregationOfObjects)
+        BOOST_FOREACH(CIdentifier problemID, aggregationOfObjects)
         {
             // check if the problem is already checked or banned
             if(negativeProblems.find(problemID) != negativeProblems.end() ||
@@ -252,7 +251,7 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
         
         
         // retrieve the subject symptoms
-        BOOST_FOREACH(int symptomID, aggregationOfObjects)
+        BOOST_FOREACH(CIdentifier symptomID, aggregationOfObjects)
         {
             // check if the symptom is already checked or banned
             if(positiveSymptoms.find(symptomID) != positiveSymptoms.end() ||
@@ -272,24 +271,26 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
         aggregationOfObjects.clear();
         objectsToBeLoaded.clear();
         
-        
-        // add problems to the suggestion
-        BOOST_FOREACH(const ProblemMap::value_type& pair, subjectProblems)
+        if(!subjectProblems.empty())
         {
-            int problemValue = calculateValue(pair.second, allProblemLinks[pair.second.id], positiveSymptoms);
-            suggestion.problems.push_back(pair.second.id);
-            suggestion.problems.push_back(problemValue);
-        }
-        
-        // add symptoms to the suggestion
-        BOOST_FOREACH(const SymptomMap::value_type& pair, subjectSymptoms)
-        {
-            int symptomValue = calculateValue(pair.second, subjectProblems, allProblemLinks, positiveSymptoms, suggestion);
-            suggestion.symptoms.push_back(pair.second.id);
-            suggestion.symptoms.push_back(symptomValue);
-        }
+            // add problems to the suggestion
+            BOOST_FOREACH(const ProblemMap::value_type& pair, subjectProblems)
+            {
+                int problemValue = calculateValue(pair.second, allProblemLinks[pair.second.id], positiveSymptoms);
+                suggestion.problems.push_back(pair.second.id);
+                suggestion.problemValues.push_back(problemValue);
+            }
+            
+            // add symptoms to the suggestion
+            BOOST_FOREACH(const SymptomMap::value_type& pair, subjectSymptoms)
+            {
+                int symptomValue = calculateValue(pair.second, subjectProblems, allProblemLinks, positiveSymptoms, suggestion);
+                suggestion.symptoms.push_back(pair.second.id);
+                suggestion.symptomValues.push_back(symptomValue);
+            }
 
-        /** \todo Lubo: This could also suggest solutions without having a positive problem */
+            /** \todo Lubo: This could also suggest solutions without having a positive problem */
+        }
     }
     
     return suggestion;
@@ -301,20 +302,20 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
 SolvingMachine::CategoryBranch SolvingMachine::buildCategoryBranch(CategoryBranch partialBranch)
 {
     CategoryMap allCategories;
-    _dataLayer.get(std::vector<int>(), allCategories);
+    _dataLayer.get(std::vector<Identifier>(), allCategories);
 
     // generate "root" branch for each category and check if all categories in the partialBranch are in it
-    BOOST_FOREACH(int categoryID, partialBranch)
+    BOOST_FOREACH(CIdentifier categoryID, partialBranch)
     {
         CategoryBranch rootBranch;
-        int parentCategory = categoryID;
+        Identifier parentCategory = categoryID;
         
-        while(parentCategory != -1)
+        while(!parentCategory.empty())
         {
             CategoryMap::iterator iterator = allCategories.find(parentCategory);
             if(iterator == allCategories.end())
             {
-                throw Exception((boost::format("SolvingMachine: Cannot find %d category.") % parentCategory).str());
+                throw Exception((boost::format("SolvingMachine: Cannot find %s category.") % parentCategory).str());
             }
 
             rootBranch.insert(iterator->second.id);
@@ -322,7 +323,7 @@ SolvingMachine::CategoryBranch SolvingMachine::buildCategoryBranch(CategoryBranc
         }
         
         bool isLeafBranch = true;
-        BOOST_FOREACH(int partialBranchCategoryID, partialBranch)
+        BOOST_FOREACH(CIdentifier partialBranchCategoryID, partialBranch)
         {
             if(rootBranch.find(partialBranchCategoryID) == rootBranch.end())
             {
@@ -347,19 +348,19 @@ SolvingMachine::CategoryBranch SolvingMachine::buildCategoryBranch(CategoryBranc
 /**
  * Recursively add all child categories on a given category
  */
-void SolvingMachine::addChilds(int categoryID, CategoryBranch& result, const CategoryMap& allCategories)
+void SolvingMachine::addChilds(CIdentifier categoryID, CategoryBranch& result, const CategoryMap& allCategories)
 {
     CategoryMap::const_iterator iterator = allCategories.find(categoryID);
     if(iterator == allCategories.end())
     {
-        throw Exception((boost::format("SolvingMachine: Cannot find %d category.") % categoryID).str());
+        throw Exception((boost::format("SolvingMachine: Cannot find %s category.") % categoryID).str());
     }
     
     // add self
     result.insert(categoryID);
     
     // add children
-    BOOST_FOREACH(int childCategoryID, iterator->second.childs)
+    BOOST_FOREACH(CIdentifier childCategoryID, iterator->second.childs)
     {
         addChilds(childCategoryID, result, allCategories);
     }
@@ -371,7 +372,7 @@ void SolvingMachine::addChilds(int categoryID, CategoryBranch& result, const Cat
 template< class Links, class Objects>
 void SolvingMachine::filterByBranch(const Links& relatedLinks, const CategoryBranch& categoryBranch, Objects& result)
 {
-    std::vector<int> objectIDs;
+    std::vector<Identifier> objectIDs;
     BOOST_FOREACH(const typename Links::value_type& pair, relatedLinks)
     {
         objectIDs.push_back(pair.first);
@@ -569,7 +570,7 @@ int SolvingMachine::calculateValue(const Symptom& symptom, const ProblemMap& sub
         originalUpperDifficultyPenalty += (1 - getDifficultyPenalty(subjectProblems.find(suggestion.problems[i])->second.difficulty));
     }
 
-    std::vector<int> newProblems;
+    std::vector<Identifier> newProblems;
     std::vector<int> newProblemValues;
     
     std::vector<int> newUpperProblems;
@@ -637,7 +638,7 @@ int SolvingMachine::calculateValue(const Problem& problem, const SymptomsWithSam
     /** \todo Lubo: this should also take in account negative symptoms and problems!!! */
     int valueOfProblem = 0;
     
-    boost::unordered_set<int> missingSymptoms;
+    boost::unordered_set<Identifier> missingSymptoms;
     BOOST_FOREACH(const SymptomMap::value_type& pair, positiveSymptoms)
     {
         missingSymptoms.insert(pair.second.id);
@@ -690,7 +691,7 @@ int SolvingMachine::calculateValue(const Problem& problem, const SymptomsWithSam
     valueOfProblem = maxHint*0.5 + totalValue*0.5; // equal weights
     valueOfProblem *= getDifficultyPenalty(problem.difficulty);
     
-    BOOST_FOREACH(int missingSymptomID, missingSymptoms)
+    BOOST_FOREACH(CIdentifier missingSymptomID, missingSymptoms)
     {
         SymptomMap::const_iterator it = positiveSymptoms.find(missingSymptomID);
         if(it->second.confirmed)

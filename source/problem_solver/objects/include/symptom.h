@@ -35,10 +35,10 @@ struct ExtendedSymptom: public Symptom, public ExtendedGenericInfo
  */
 struct SymptomLink
 {
-    int id;
+    Identifier id;
     
-    int problemID;
-    int symptomID;
+    Identifier problemID;
+    Identifier symptomID;
     
     int positiveChecks; // how many times were the problem and the symptom both positive
     int falsePositiveChecks; // how many times was the problem negative but the symptom positive
@@ -46,8 +46,7 @@ struct SymptomLink
     
     bool confirmed; // indicates if a specialist has confirmed this relation
     
-    SymptomLink():id(-1),problemID(-1),symptomID(-1),positiveChecks(0),falsePositiveChecks(0),
-                  negativeChecks(0),confirmed(false){}
+    SymptomLink():positiveChecks(0),falsePositiveChecks(0),negativeChecks(0),confirmed(false){}
 };
 
 } // namespace ProblemSolver

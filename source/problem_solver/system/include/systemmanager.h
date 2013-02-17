@@ -48,14 +48,17 @@ public:
      */
     struct SearchResult
     {
-        std::vector<int> problems;
-        std::vector<int> symptoms;
-        std::vector<int> solutions;
+        std::vector<Identifier> symptoms;
+        std::vector<int> symptomRelevance;
+        std::vector<Identifier> problems;
+        std::vector<int> problemRelevance;
+        std::vector<Identifier> solutions;
+        std::vector<int> solutionRelevance;
     };
 
 public:
     
-    SearchResult performSearch(const std::string& searchPhrase, int chosenCategory);
+    SearchResult performSearch(const std::string& searchPhrase);
     
     /**
      * For all of these it does not matter if the check result has been updated inside the Investigation or not,
@@ -63,9 +66,9 @@ public:
      */
     /** \todo Lubo: links updated by events must adapt values so that they always have a chance to turn upside down given time */
     /** \todo Lubo: automatically return suggestion? */
-    void onProblemChecked(int problemID, bool checkResult, int investigationID);
-    void onSymptomChecked(int symptomID, bool checkResult, int investigationID);
-    void onSolutionChecked(int solutionID, bool checkResult, int investigationID);
+    void onProblemChecked(CIdentifier problemID, bool checkResult, CIdentifier investigationID);
+    void onSymptomChecked(CIdentifier symptomID, bool checkResult, CIdentifier investigationID);
+    void onSolutionChecked(CIdentifier solutionID, bool checkResult, CIdentifier investigationID);
     
     SolvingMachine::Suggestion makeSuggestion(const Investigation& investigation);
     IDataLayer& getDataLayer();
@@ -94,13 +97,16 @@ private:
     void updateLinkByAction(SymptomLink& link, SymptomLinkAction action);
     void updateLinkByAction(SolutionLink& link, SolutionLinkAction action);
     
-    void updateLinks(bool byProblem, int relatedID, const std::vector<int>& inputLinks,
-                     boost::unordered_map<int, SymptomLink>& allLinks, SymptomLinkAction action);
+    void updateLinks(bool byProblem, CIdentifier relatedID, const std::vector<Identifier>& inputLinks,
+                     boost::unordered_map<Identifier, SymptomLink>& allLinks, SymptomLinkAction action);
     
-    void updateLinks(bool byProblem, int relatedID, const std::vector<int>& inputLinks,
-                     boost::unordered_map<int, SolutionLink>& allLinks, SolutionLinkAction action);
+    void updateLinks(bool byProblem, CIdentifier relatedID, const std::vector<Identifier>& inputLinks,
+                     boost::unordered_map<Identifier, SolutionLink>& allLinks, SolutionLinkAction action);
     
-    Investigation getInvestigation(int investigationID);
+    Investigation getInvestigation(CIdentifier investigationID);
+    
+    template<class T>
+    void populateSearchResult(const std::vector<std::string> searchWords, std::vector<Identifier>& objectIDs, std::vector<int>& objectRelevance);
     
 private:
     

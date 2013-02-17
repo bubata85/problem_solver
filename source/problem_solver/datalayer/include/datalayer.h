@@ -26,13 +26,13 @@ public:
     /**
      * In add functions the ID of the object is irrelevant, the ID of the new object is returned
      */
-    virtual int add(const Category& category) = 0;
-    virtual int add(const ExtendedProblem& problem) = 0;
-    virtual int add(const ExtendedSymptom& symptom) = 0;
-    virtual int add(const ExtendedSolution& solution) = 0;
-    virtual int add(const SymptomLink& symptomLink) = 0;
-    virtual int add(const SolutionLink& solutionLink) = 0;
-    virtual int add(const Investigation& investigation) = 0;
+    virtual Identifier add(const Category& category) = 0;
+    virtual Identifier add(const ExtendedProblem& problem) = 0;
+    virtual Identifier add(const ExtendedSymptom& symptom) = 0;
+    virtual Identifier add(const ExtendedSolution& solution) = 0;
+    virtual Identifier add(const SymptomLink& symptomLink) = 0;
+    virtual Identifier add(const SolutionLink& solutionLink) = 0;
+    virtual Identifier add(const Investigation& investigation) = 0;
     
     /**
      * There is no way to edit the object ID, it is always used to find the object needing change

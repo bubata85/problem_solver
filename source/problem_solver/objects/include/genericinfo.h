@@ -8,6 +8,7 @@
 #pragma once
 
 #include "difficulty.h"
+#include "identifier.h"
 
 #include <string>
 #include <vector>
@@ -21,13 +22,13 @@ namespace ProblemSolver
  */
 struct GenericInfo
 {
-    int id; // id of the object
-    int categoryID; // id of the category the object is part of
+    Identifier id; // id of the object
+    Identifier categoryID; // id of the category the object is part of
     
     DifficultyLevel difficulty; // difficulty level of "completion"
     bool confirmed; // indicates if a specialist has confirmed this object
     
-    GenericInfo():id(-1),categoryID(0),difficulty(difficultyUnknown),confirmed(false){}
+    GenericInfo():difficulty(difficultyUnknown),confirmed(false){}
 };
 
 /**

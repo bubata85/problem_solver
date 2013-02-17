@@ -46,17 +46,17 @@ struct ExtendedSolution: public Solution, public ExtendedGenericInfo
  */
 struct SolutionLink
 {
-    int id;
+    Identifier id;
     
-    int problemID;
-    int solutionID;
+    Identifier problemID;
+    Identifier solutionID;
     
     int positive; // how many times the solution fixed the problem
     int negative; // how many times the solution did not fixed the problem
     
     bool confirmed; // indicates if a specialist has confirmed this solution
     
-    SolutionLink():id(-1),problemID(-1),solutionID(-1),positive(0),negative(0),confirmed(false){}
+    SolutionLink():positive(0),negative(0),confirmed(false){}
 };
 
 } // namespace ProblemSolver

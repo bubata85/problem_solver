@@ -10,85 +10,85 @@
 namespace ProblemSolver
 {
 
-void MySqlDataLayer::get(const std::vector<int>& categoryIDs, CategoryMap& result, std::vector<int>* notFound)
+void MySqlDataLayer::get(const std::vector<Identifier>& categoryIDs, CategoryMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MySqlDataLayer::get(const std::vector<int>& problemIDs, ProblemMap& result, std::vector<int>* notFound)
+void MySqlDataLayer::get(const std::vector<Identifier>& problemIDs, ProblemMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MySqlDataLayer::get(const std::vector<int>& symptomIDs, SymptomMap& result, std::vector<int>* notFound)
+void MySqlDataLayer::get(const std::vector<Identifier>& symptomIDs, SymptomMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MySqlDataLayer::get(const std::vector<int>& solutionIDs, SolutionMap& result, std::vector<int>* notFound)
+void MySqlDataLayer::get(const std::vector<Identifier>& solutionIDs, SolutionMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MySqlDataLayer::get(const std::vector<int>& investigationIDs, InvestigationMap& result, std::vector<int>* notFound)
-{
-    
-}
-    
-void MySqlDataLayer::get(const std::vector<int>& problemIDs, ExtendedProblemMap& result, std::vector<int>* notFound)
-{
-    
-}
-void MySqlDataLayer::get(const std::vector<int>& symptomIDs, ExtendedSymptomMap& result, std::vector<int>* notFound)
-{
-    
-}
-void MySqlDataLayer::get(const std::vector<int>& solutionIDs, ExtendedSolutionMap& result, std::vector<int>* notFound)
+void MySqlDataLayer::get(const std::vector<Identifier>& investigationIDs, InvestigationMap& result, std::vector<Identifier>* notFound)
 {
     
 }
     
-void MySqlDataLayer::getLinksByProblem(int problemID, SymptomsWithSameProblem& result, bool* found)
+void MySqlDataLayer::get(const std::vector<Identifier>& problemIDs, ExtendedProblemMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MySqlDataLayer::getLinksBySymptom(int symptomID, ProblemsWithSameSymptom& result, bool* found)
+void MySqlDataLayer::get(const std::vector<Identifier>& symptomIDs, ExtendedSymptomMap& result, std::vector<Identifier>* notFound)
+{
+    
+}
+void MySqlDataLayer::get(const std::vector<Identifier>& solutionIDs, ExtendedSolutionMap& result, std::vector<Identifier>* notFound)
 {
     
 }
     
-void MySqlDataLayer::getLinksByProblem(int problemID, SolutionsWithSameProblem& result, bool* found)
+void MySqlDataLayer::getLinksByProblem(Identifier problemID, SymptomsWithSameProblem& result, bool* found)
 {
     
 }
-void MySqlDataLayer::getLinksBySolution(int solutionID, ProblemsWithSameSolution& result, bool* found)
+void MySqlDataLayer::getLinksBySymptom(Identifier symptomID, ProblemsWithSameSymptom& result, bool* found)
+{
+    
+}
+    
+void MySqlDataLayer::getLinksByProblem(Identifier problemID, SolutionsWithSameProblem& result, bool* found)
+{
+    
+}
+void MySqlDataLayer::getLinksBySolution(Identifier solutionID, ProblemsWithSameSolution& result, bool* found)
 {
     
 }
 
-int MySqlDataLayer::add(const Category& category)
+Identifier MySqlDataLayer::add(const Category& category)
 {
-    return 0;
+    return "";
 }
-int MySqlDataLayer::add(const ExtendedProblem& problem)
+Identifier MySqlDataLayer::add(const ExtendedProblem& problem)
 {
-    return 0;
+    return "";
 }
-int MySqlDataLayer::add(const ExtendedSymptom& symptom)
+Identifier MySqlDataLayer::add(const ExtendedSymptom& symptom)
 {
-    return 0;
+    return "";
 }
-int MySqlDataLayer::add(const ExtendedSolution& solution)
+Identifier MySqlDataLayer::add(const ExtendedSolution& solution)
 {
-    return 0;
+    return "";
 }
-int MySqlDataLayer::add(const SymptomLink& symptomLink)
+Identifier MySqlDataLayer::add(const SymptomLink& symptomLink)
 {
-    return 0;
+    return "";
 }
-int MySqlDataLayer::add(const SolutionLink& solutionLink)
+Identifier MySqlDataLayer::add(const SolutionLink& solutionLink)
 {
-    return 0;
+    return "";
 }
-int MySqlDataLayer::add(const Investigation& solutionLink)
+Identifier MySqlDataLayer::add(const Investigation& solutionLink)
 {
-    return 0;
+    return "";
 }
 
 void MySqlDataLayer::modify(const Category& category)

@@ -68,13 +68,13 @@ public:
      */
     struct Suggestion
     {
-        std::vector<int> symptoms; // list of symptoms that can be checked
+        std::vector<Identifier> symptoms; // list of symptoms that can be checked
         std::vector<int> symptomValues; // numeric representation of how worth it is to check a symptom
         
-        std::vector<int> problems; // list of problems that can be checked
+        std::vector<Identifier> problems; // list of problems that can be checked
         std::vector<int> problemValues; // numeric representation of how worth it is to check a problem
         
-        std::vector<int> solutions; // list of solutions that can be applied
+        std::vector<Identifier> solutions; // list of solutions that can be applied
         std::vector<int> solutionValues; // numeric representation of how worth it is to apply a solution
     };
     
@@ -85,18 +85,18 @@ public:
 private:
     
     // set of all the category IDs that define a working branch
-    typedef boost::unordered_set<int> CategoryBranch;
+    typedef boost::unordered_set<Identifier> CategoryBranch;
     
     // key is symptom ID, value is all the problems linked to the symptom
-    typedef boost::unordered_map<int, ProblemsWithSameSymptom> SymptomToLinks;
+    typedef boost::unordered_map<Identifier, ProblemsWithSameSymptom> SymptomToLinks;
     
     // key is problem ID, value is all the symptoms linked to the problem
-    typedef boost::unordered_map<int, SymptomsWithSameProblem> ProblemToLinks;
+    typedef boost::unordered_map<Identifier, SymptomsWithSameProblem> ProblemToLinks;
     
 private:
     
     CategoryBranch buildCategoryBranch(CategoryBranch partialBranch);
-    void addChilds(int categoryID, CategoryBranch& result, const CategoryMap& allCategories);
+    void addChilds(CIdentifier categoryID, CategoryBranch& result, const CategoryMap& allCategories);
     
     template< class Links, class Objects>
     void filterByBranch(const Links& relatedLinks, const CategoryBranch& categoryBranch, Objects& result);

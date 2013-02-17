@@ -10,85 +10,85 @@
 namespace ProblemSolver
 {
 
-void MemoryDataLayer::get(const std::vector<int>& categoryIDs, CategoryMap& result, std::vector<int>* notFound)
+void MemoryDataLayer::get(const std::vector<Identifier>& categoryIDs, CategoryMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MemoryDataLayer::get(const std::vector<int>& problemIDs, ProblemMap& result, std::vector<int>* notFound)
+void MemoryDataLayer::get(const std::vector<Identifier>& problemIDs, ProblemMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MemoryDataLayer::get(const std::vector<int>& symptomIDs, SymptomMap& result, std::vector<int>* notFound)
+void MemoryDataLayer::get(const std::vector<Identifier>& symptomIDs, SymptomMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MemoryDataLayer::get(const std::vector<int>& solutionIDs, SolutionMap& result, std::vector<int>* notFound)
+void MemoryDataLayer::get(const std::vector<Identifier>& solutionIDs, SolutionMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MemoryDataLayer::get(const std::vector<int>& investigationIDs, InvestigationMap& result, std::vector<int>* notFound)
-{
-    
-}
-    
-void MemoryDataLayer::get(const std::vector<int>& problemIDs, ExtendedProblemMap& result, std::vector<int>* notFound)
-{
-    
-}
-void MemoryDataLayer::get(const std::vector<int>& symptomIDs, ExtendedSymptomMap& result, std::vector<int>* notFound)
-{
-    
-}
-void MemoryDataLayer::get(const std::vector<int>& solutionIDs, ExtendedSolutionMap& result, std::vector<int>* notFound)
+void MemoryDataLayer::get(const std::vector<Identifier>& investigationIDs, InvestigationMap& result, std::vector<Identifier>* notFound)
 {
     
 }
     
-void MemoryDataLayer::getLinksByProblem(int problemID, SymptomsWithSameProblem& result, bool* found)
+void MemoryDataLayer::get(const std::vector<Identifier>& problemIDs, ExtendedProblemMap& result, std::vector<Identifier>* notFound)
 {
     
 }
-void MemoryDataLayer::getLinksBySymptom(int symptomID, ProblemsWithSameSymptom& result, bool* found)
+void MemoryDataLayer::get(const std::vector<Identifier>& symptomIDs, ExtendedSymptomMap& result, std::vector<Identifier>* notFound)
+{
+    
+}
+void MemoryDataLayer::get(const std::vector<Identifier>& solutionIDs, ExtendedSolutionMap& result, std::vector<Identifier>* notFound)
 {
     
 }
     
-void MemoryDataLayer::getLinksByProblem(int problemID, SolutionsWithSameProblem& result, bool* found)
+void MemoryDataLayer::getLinksByProblem(Identifier problemID, SymptomsWithSameProblem& result, bool* found)
 {
     
 }
-void MemoryDataLayer::getLinksBySolution(int solutionID, ProblemsWithSameSolution& result, bool* found)
+void MemoryDataLayer::getLinksBySymptom(Identifier symptomID, ProblemsWithSameSymptom& result, bool* found)
+{
+    
+}
+    
+void MemoryDataLayer::getLinksByProblem(Identifier problemID, SolutionsWithSameProblem& result, bool* found)
+{
+    
+}
+void MemoryDataLayer::getLinksBySolution(Identifier solutionID, ProblemsWithSameSolution& result, bool* found)
 {
     
 }
 
-int MemoryDataLayer::add(const Category& category)
+Identifier MemoryDataLayer::add(const Category& category)
 {
-    return 0;
+    return "";
 }
-int MemoryDataLayer::add(const ExtendedProblem& problem)
+Identifier MemoryDataLayer::add(const ExtendedProblem& problem)
 {
-    return 0;
+    return "";
 }
-int MemoryDataLayer::add(const ExtendedSymptom& symptom)
+Identifier MemoryDataLayer::add(const ExtendedSymptom& symptom)
 {
-    return 0;
+    return "";
 }
-int MemoryDataLayer::add(const ExtendedSolution& solution)
+Identifier MemoryDataLayer::add(const ExtendedSolution& solution)
 {
-    return 0;
+    return "";
 }
-int MemoryDataLayer::add(const SymptomLink& symptomLink)
+Identifier MemoryDataLayer::add(const SymptomLink& symptomLink)
 {
-    return 0;
+    return "";
 }
-int MemoryDataLayer::add(const SolutionLink& solutionLink)
+Identifier MemoryDataLayer::add(const SolutionLink& solutionLink)
 {
-    return 0;
+    return "";
 }
-int MemoryDataLayer::add(const Investigation& solutionLink)
+Identifier MemoryDataLayer::add(const Investigation& solutionLink)
 {
-    return 0;
+    return "";
 }
 
 void MemoryDataLayer::modify(const Category& category)

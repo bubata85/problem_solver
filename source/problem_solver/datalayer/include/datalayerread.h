@@ -23,28 +23,28 @@ namespace ProblemSolver
 {
 
 // Object ID to Object maps
-typedef boost::unordered_map<int, Category> CategoryMap;
-typedef boost::unordered_map<int, Problem> ProblemMap;
-typedef boost::unordered_map<int, Symptom> SymptomMap;
-typedef boost::unordered_map<int, Solution> SolutionMap;
+typedef boost::unordered_map<Identifier, Category> CategoryMap;
+typedef boost::unordered_map<Identifier, Problem> ProblemMap;
+typedef boost::unordered_map<Identifier, Symptom> SymptomMap;
+typedef boost::unordered_map<Identifier, Solution> SolutionMap;
 
-typedef boost::unordered_map<int, ExtendedProblem> ExtendedProblemMap;
-typedef boost::unordered_map<int, ExtendedSymptom> ExtendedSymptomMap;
-typedef boost::unordered_map<int, ExtendedSolution> ExtendedSolutionMap;
+typedef boost::unordered_map<Identifier, ExtendedProblem> ExtendedProblemMap;
+typedef boost::unordered_map<Identifier, ExtendedSymptom> ExtendedSymptomMap;
+typedef boost::unordered_map<Identifier, ExtendedSolution> ExtendedSolutionMap;
 
-typedef boost::unordered_map<int, Investigation> InvestigationMap;
+typedef boost::unordered_map<Identifier, Investigation> InvestigationMap;
 
 // all links connected with a certain problem, organized by symptom ID
-typedef boost::unordered_map<int, SymptomLink> SymptomsWithSameProblem;
+typedef boost::unordered_map<Identifier, SymptomLink> SymptomsWithSameProblem;
 
 // all links connected with a certain symptom, organized by problem ID
-typedef boost::unordered_map<int, SymptomLink> ProblemsWithSameSymptom;
+typedef boost::unordered_map<Identifier, SymptomLink> ProblemsWithSameSymptom;
 
 // all links connected with a certain problem, organized by solution ID
-typedef boost::unordered_map<int, SolutionLink> SolutionsWithSameProblem;
+typedef boost::unordered_map<Identifier, SolutionLink> SolutionsWithSameProblem;
 
 // all links connected with a certain solution, organized by problem ID
-typedef boost::unordered_map<int, SolutionLink> ProblemsWithSameSolution;
+typedef boost::unordered_map<Identifier, SolutionLink> ProblemsWithSameSolution;
 
 /**
  * Exception thrown from all DataLayer operations
@@ -74,28 +74,28 @@ public:
      * The notFound vector will contains the ID's of objects that were not found.
      * If notFound is NULL, the function will throw if something is not found.
      */
-    virtual void get(const std::vector<int>& categoryIDs, CategoryMap& result, std::vector<int>* notFound = NULL) = 0;
-    virtual void get(const std::vector<int>& problemIDs, ProblemMap& result, std::vector<int>* notFound = NULL) = 0;
-    virtual void get(const std::vector<int>& symptomIDs, SymptomMap& result, std::vector<int>* notFound = NULL) = 0;
-    virtual void get(const std::vector<int>& solutionIDs, SolutionMap& result, std::vector<int>* notFound = NULL) = 0;
-    virtual void get(const std::vector<int>& investigationIDs, InvestigationMap& result, std::vector<int>* notFound = NULL) = 0;
+    virtual void get(const std::vector<Identifier>& categoryIDs, CategoryMap& result, std::vector<Identifier>* notFound = NULL) = 0;
+    virtual void get(const std::vector<Identifier>& problemIDs, ProblemMap& result, std::vector<Identifier>* notFound = NULL) = 0;
+    virtual void get(const std::vector<Identifier>& symptomIDs, SymptomMap& result, std::vector<Identifier>* notFound = NULL) = 0;
+    virtual void get(const std::vector<Identifier>& solutionIDs, SolutionMap& result, std::vector<Identifier>* notFound = NULL) = 0;
+    virtual void get(const std::vector<Identifier>& investigationIDs, InvestigationMap& result, std::vector<Identifier>* notFound = NULL) = 0;
     
     /**
      * Get Extended version of objects
      */
-    virtual void get(const std::vector<int>& problemIDs, ExtendedProblemMap& result, std::vector<int>* notFound = NULL) = 0;
-    virtual void get(const std::vector<int>& symptomIDs, ExtendedSymptomMap& result, std::vector<int>* notFound = NULL) = 0;
-    virtual void get(const std::vector<int>& solutionIDs, ExtendedSolutionMap& result, std::vector<int>* notFound = NULL) = 0;
+    virtual void get(const std::vector<Identifier>& problemIDs, ExtendedProblemMap& result, std::vector<Identifier>* notFound = NULL) = 0;
+    virtual void get(const std::vector<Identifier>& symptomIDs, ExtendedSymptomMap& result, std::vector<Identifier>* notFound = NULL) = 0;
+    virtual void get(const std::vector<Identifier>& solutionIDs, ExtendedSolutionMap& result, std::vector<Identifier>* notFound = NULL) = 0;
     
     /**
      * The found output value will contain true false depending if the object was found
      * If found is NULL, the function will throw if something is not found
      */
-    virtual void getLinksByProblem(int problemID, SymptomsWithSameProblem& result, bool* found = NULL) = 0;
-    virtual void getLinksBySymptom(int symptomID, ProblemsWithSameSymptom& result, bool* found = NULL) = 0;
+    virtual void getLinksByProblem(Identifier problemID, SymptomsWithSameProblem& result, bool* found = NULL) = 0;
+    virtual void getLinksBySymptom(Identifier symptomID, ProblemsWithSameSymptom& result, bool* found = NULL) = 0;
     
-    virtual void getLinksByProblem(int problemID, SolutionsWithSameProblem& result, bool* found = NULL) = 0;
-    virtual void getLinksBySolution(int solutionID, ProblemsWithSameSolution& result, bool* found = NULL) = 0;
+    virtual void getLinksByProblem(Identifier problemID, SolutionsWithSameProblem& result, bool* found = NULL) = 0;
+    virtual void getLinksBySolution(Identifier solutionID, ProblemsWithSameSolution& result, bool* found = NULL) = 0;
     
 };
 

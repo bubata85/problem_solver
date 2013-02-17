@@ -8,6 +8,7 @@
 #include "cachingdatalayer.h"
 #include "memorydatalayer.h"
 #include "mysqldatalayer.h"
+#include "mongodbdatalayer.h"
 
 #include "systemmanager.h"
 #include "remotejsonmanager.h"
@@ -80,7 +81,9 @@ int main(int argc, const char* argv[])
         return 1;
     }
     
-    SystemManager systemManager(new CachingDataLayer(new MySqlDataLayer(), new MemoryDataLayer()));
+    /** \todo Lubo: in the future the caching must be implemented */
+    // SystemManager systemManager(new CachingDataLayer(new MongoDbDataLayer(), new MemoryDataLayer()));
+    SystemManager systemManager(new MongoDbDataLayer());
     
     RemoteJsonManager remoteJsonManager(systemManager);
     remoteJsonManager.run(host, port);
