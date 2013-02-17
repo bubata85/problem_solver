@@ -5,3 +5,5 @@ create ready to use adaptors to popular knowledge bases
 keep track of symptom combinations (e.g. if one symptom combined with another symptom has different values ralated with a problem)
 user initiative for doing extra work on investigations (will increase KB accuracy)
 polymorphic objects (one object being a problem and a symptom for instance)
+diagnose based on quick fixes (suggest more solutions)
+take into account positive links to negative symptoms

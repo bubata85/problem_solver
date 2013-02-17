@@ -19,6 +19,7 @@ namespace ProblemSolver
 struct Investigation
 {
     int id; // id in the database
+    bool closed; // whether this investigation is no longer relevant
     
     // keep in mind you could have a solution before identifying the problem!
     int positiveProblem; // if this is >= 0 it will mean the problem causing the symptoms has been identified
@@ -33,8 +34,8 @@ struct Investigation
     
     std::vector<int> negativeSolutions; // solutions that have been verified as non-working
     std::vector<int> bannedSolutions; // solutions that the user did not wish to verify
-    /** \todo Lubo: ADD CLOSED BOOL */
-    Investigation():id(-1),positiveProblem(-1),positiveSolution(-1){}
+
+    Investigation():id(-1), closed(false), positiveProblem(-1),positiveSolution(-1){}
 };
 
 } // namespace ProblemSolver

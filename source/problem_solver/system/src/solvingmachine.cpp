@@ -284,7 +284,7 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
         // add symptoms to the suggestion
         BOOST_FOREACH(const SymptomMap::value_type& pair, subjectSymptoms)
         {
-            int symptomValue = calculateValue(pair.second, subjectProblems);
+            int symptomValue = calculateValue(pair.second, subjectProblems, allProblemLinks, positiveSymptoms, suggestion);
             suggestion.symptoms.push_back(pair.second.id);
             suggestion.symptoms.push_back(symptomValue);
         }
@@ -359,7 +359,7 @@ void SolvingMachine::addChilds(int categoryID, CategoryBranch& result, const Cat
     result.insert(categoryID);
     
     // add children
-    BOOST_FOREACH(int childCategoryID, iterator->second.childCategories)
+    BOOST_FOREACH(int childCategoryID, iterator->second.childs)
     {
         addChilds(childCategoryID, result, allCategories);
     }
@@ -519,18 +519,118 @@ int SolvingMachine::calculateValue(const GenericInfo& object, const SolutionLink
 }
 
 /**
- * Calculates the value of a subject symptom
- * 
+ * Calculates the value of a subject symptom.
+ * This is done by re evaluating the subject problems as if the symptom was active.
+ * In case the upper bound of problems is smaller than the initial one, then this symptom brings value.
+ * The value is the chance of this problem being active.
  */
-int SolvingMachine::calculateValue(const Symptom& symptom, const ProblemMap& subjectProblems)
+int SolvingMachine::calculateValue(const Symptom& symptom, const ProblemMap& subjectProblems, const ProblemToLinks& allProblemLinks,
+                                   const SymptomMap& positiveSymptoms, const Suggestion& suggestion)
 {
     /** \todo Lubo: this should also take in account negative symptoms and problems!!! */
-    /** \todo Lubo: implement symptom calculate value!! */
-    return 0;
+    
+    /** \todo Lubo: OPTIMIZE symptom value, it has too much excessive work done */
+    SymptomMap theoreticalSymptoms = positiveSymptoms;
+    theoreticalSymptoms[symptom.id] = symptom;
+    
+    std::vector<int> originalUpperProblems;
+    std::vector<double> originalProblemChances;
+    int originalHighestProblemValue = 0;
+    double originalUpperDifficultyPenalty = 0;
+    
+    // find the original highest problem value
+    for(uint i = 0; i < suggestion.problems.size(); ++i)
+    {
+        if(originalHighestProblemValue < suggestion.problemValues[i])
+            originalHighestProblemValue = suggestion.problemValues[i];
+        
+        const SymptomsWithSameProblem& symptomsWithThisProblem = allProblemLinks.find(suggestion.problems[i])->second;
+        SymptomsWithSameProblem::const_iterator it = symptomsWithThisProblem.find(symptom.id);
+        
+        if(it != symptomsWithThisProblem.end())
+        {
+            double chanceOfProblemCausingSymptom = calculateValue(it->second.positiveChecks, it->second.negativeChecks);
+            if(!it->second.confirmed)
+                chanceOfProblemCausingSymptom *= UNCONFIRMED_PENALTY;
+
+            originalProblemChances.push_back(chanceOfProblemCausingSymptom);
+        }
+        else
+            originalProblemChances.push_back(0); // this problem has no chance to cause this symptom
+    }
+    
+    // find the original upper problems
+    for(uint i = 0; i < suggestion.problems.size(); ++i)
+    {
+        if(suggestion.problemValues[i] < (originalHighestProblemValue - UPPER_BOUND_PROBLEM_RANGE))
+            continue;
+        
+        originalUpperProblems.push_back(i);
+        originalUpperDifficultyPenalty += (1 - getDifficultyPenalty(subjectProblems.find(suggestion.problems[i])->second.difficulty));
+    }
+
+    std::vector<int> newProblems;
+    std::vector<int> newProblemValues;
+    
+    std::vector<int> newUpperProblems;
+    int newHighestProblemValue = 0;
+    double newUpperDifficultyPenalty = 0;
+    
+    // find all new values and the highest value
+    BOOST_FOREACH(const ProblemMap::value_type& pair, subjectProblems)
+    {
+        int problemValue = calculateValue(pair.second, allProblemLinks.find(pair.second.id)->second, theoreticalSymptoms);
+        newProblems.push_back(pair.second.id);
+        newProblemValues.push_back(problemValue);
+        
+        if(newHighestProblemValue < problemValue)
+            newHighestProblemValue = problemValue;
+    }
+
+    // find the new upper problems
+    for(uint i = 0; i < newProblems.size(); ++i)
+    {
+        if(newProblemValues[i] < (newHighestProblemValue - UPPER_BOUND_PROBLEM_RANGE))
+            continue;
+        
+        newUpperProblems.push_back(i);
+        newUpperDifficultyPenalty += (1 - getDifficultyPenalty(subjectProblems.find(newProblems[i])->second.difficulty));
+    }
+    
+    double difficultyGain = originalUpperDifficultyPenalty - newUpperDifficultyPenalty;
+    double symptomDifficulty = (1 - getDifficultyPenalty(symptom.difficulty));
+    int fewerProblems = originalUpperProblems.size() - newUpperProblems.size();
+    
+    if(difficultyGain < 0 || fewerProblems >= 0)
+    {
+        return 0; // there is no value in checking this symptom at this time
+    }
+    
+    /** \todo Lubo: this probably needs rework and be based only on the GAIN! */
+    // there is value in this symptom, calculate the chance of having it
+    double totalValue = 0;
+    for(uint i = 0; i < originalUpperProblems.size(); ++i)
+    {
+        totalValue += originalProblemChances[originalUpperProblems[i]];
+    }
+    
+    double symptomValue = totalValue/originalUpperProblems.size();
+    if(difficultyGain > symptomDifficulty)
+    {
+        // there is definite value in checking this symptom, no need to diminish it by the difficulty
+    }
+    else
+    {
+        // there is some value in checking this symptom, diminish it by the difficulty
+        /** \todo Lubo: the penalty should be less depending how many symptoms we eliminated */
+        symptomValue *= getDifficultyPenalty(symptom.difficulty);
+    }
+    
+    return symptomValue;
 }
 
 /**
- * Calculates the value of a subject problem by the probability it has to be positive
+ * Calculates the value of a subject problem by the probability it has to be positive based on the positive symptoms.
  */
 int SolvingMachine::calculateValue(const Problem& problem, const SymptomsWithSameProblem& connectedSymptoms, const SymptomMap& positiveSymptoms)
 {
@@ -587,7 +687,8 @@ int SolvingMachine::calculateValue(const Problem& problem, const SymptomsWithSam
     else
         totalValue = 1;
     
-    valueOfProblem = maxHint*totalValue;
+    valueOfProblem = maxHint*0.5 + totalValue*0.5; // equal weights
+    valueOfProblem *= getDifficultyPenalty(problem.difficulty);
     
     BOOST_FOREACH(int missingSymptomID, missingSymptoms)
     {

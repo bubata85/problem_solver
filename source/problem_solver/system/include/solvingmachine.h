@@ -32,8 +32,14 @@ public:
      */
     static const double MAX_REFERENCES = 100;
     static const double UNCONFIRMED_PENALTY = 0.5; // penalty applied to links and objects that are not yet confirmed
-    static const double MISSING_SYMPTOM_PENALTY = 0.8; // penalty applied to problems for each missing confirmed symptom
-    static const double MISSING_UNCONFIRMED_SYMPTOM_PENALTY = 0.9; // less restrictive
+    static const double MISSING_SYMPTOM_PENALTY = 0.5; // penalty applied to problems for each missing confirmed symptom
+    static const double MISSING_UNCONFIRMED_SYMPTOM_PENALTY = 0.75; // less restrictive
+    /**
+     * A problem is considered part of the upper bound when the difference in value between it and
+     * the problem with highest value is less than this constant:
+     * E.g. if we have 4 problems with values 75, 50, 44, 30 then the upper bound problems are those with values 75 and 50.
+     */
+    static const double UPPER_BOUND_PROBLEM_RANGE = 20; 
     
 public:
     
@@ -105,7 +111,8 @@ private:
     double calculateValue(int positiveReferences, int negativeReferences);
     
     int calculateValue(const GenericInfo& object, const SolutionLink& link);
-    int calculateValue(const Symptom& symptom, const ProblemMap& subjectProblems);
+    int calculateValue(const Symptom& symptom, const ProblemMap& subjectProblems, const ProblemToLinks& allProblemLinks,
+                       const SymptomMap& positiveSymptoms, const Suggestion& suggestion);
     int calculateValue(const Problem& problem, const SymptomsWithSameProblem& connectedSymptoms, const SymptomMap& positiveSymptoms);
     
 private:

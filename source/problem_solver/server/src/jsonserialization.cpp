@@ -21,7 +21,7 @@ std::string JsonSerializer::serialize(const Category& category)
     addKeyValue("name", category.name);
     addKeyValue("parent", category.parent);
     addKeyValue("description", category.description);
-    addArray("childCategories", category.childCategories, false);
+    addArray("childs", category.childs, false);
     
     endObject();
     
@@ -82,6 +82,9 @@ std::string JsonSerializer::serialize(const Investigation& investigation)
 {
     _result.clear();
 
+    addKeyValue("id", investigation.id);
+    addKeyValue("closed", investigation.closed);
+    
     addKeyValue("positiveProblem", investigation.positiveProblem);
     addKeyValue("positiveSolution", investigation.positiveSolution);
     
@@ -93,7 +96,7 @@ std::string JsonSerializer::serialize(const Investigation& investigation)
     addArray("bannedProblems", investigation.bannedProblems);
     
     addArray("negativeSolutions", investigation.negativeSolutions);
-    addArray("bannedSolutions", investigation.bannedSolutions);
+    addArray("bannedSolutions", investigation.bannedSolutions, false);
     
     return _result;
 }
@@ -135,7 +138,7 @@ Category JsonDeserializer::deserializeCategory(const boost::property_tree::ptree
     getValue(result.name, "name", json);
     getValue(result.description, "description", json);
     getValue(result.parent, "parent", json);
-    getArray(result.childCategories, "childCategories", json);
+    getArray(result.childs, "childs", json);
     
     return result;
 }
@@ -195,6 +198,7 @@ Investigation JsonDeserializer::deserializeInvestigation(const boost::property_t
     Investigation result;
     
     getValue(result.id, "id", json);
+    getValue(result.closed, "closed", json);
     getValue(result.positiveProblem, "positiveProblem", json);
     getValue(result.positiveSolution, "positiveSolution", json);
     
@@ -218,7 +222,7 @@ void JsonDeserializer::getGenericInfo(T& object, const boost::property_tree::ptr
     int difficulty = 0;
     getValue(difficulty, "difficulty", json);
     if(difficulty < difficultyUnknown || difficulty > difficultyCategoryExpertOnly)
-        throw(std::runtime_error("JSON: Cannot deserialize difficulty "));
+        throw(std::runtime_error("JSON: Cannot deserialize difficulty"));
     object.difficulty = static_cast<DifficultyLevel>(difficulty);
     getValue(object.confirmed, "confirmed", json);
     getValue(object.categoryID, "categoryID", json);
