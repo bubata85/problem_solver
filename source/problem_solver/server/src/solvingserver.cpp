@@ -52,6 +52,8 @@ int main(int argc, const char* argv[])
     
     std::string host;
     int port;
+    std::string mongoConnectionString;
+    std::string mongoDatabase;
     
     po::variables_map optionsMap;
     try
@@ -60,7 +62,9 @@ int main(int argc, const char* argv[])
         allowedOptions.add_options()
             ("help,h", "Produce help message.")
             ("host", po::value<std::string>()->required(), "Required. Server IP")
-            ("port", po::value<int>()->required(), "Required. Server Port");
+            ("port", po::value<int>()->required(), "Required. Server Port")
+            ("mongoConnection", po::value<std::string>()->required(), "Required. Mongo Connection string. E.g: host:port")
+            ("mongoDatabase", po::value<std::string>()->required(), "Required. Mongo Database name. E.g: kb");
 
         po::store(po::parse_command_line(argc, argv, allowedOptions), optionsMap, true);
         
@@ -74,6 +78,8 @@ int main(int argc, const char* argv[])
         
         host = optionsMap["host"].as<std::string>();
         port = optionsMap["port"].as<int>();
+        mongoConnectionString = optionsMap["mongoConnection"].as<std::string>();
+        mongoDatabase = optionsMap["mongoDatabase"].as<std::string>();
     }
     catch(std::exception& e)
     {
@@ -83,7 +89,7 @@ int main(int argc, const char* argv[])
     
     /** \todo Lubo: in the future the caching must be implemented */
     // SystemManager systemManager(new CachingDataLayer(new MongoDbDataLayer(), new MemoryDataLayer()));
-    SystemManager systemManager(new MongoDbDataLayer());
+    SystemManager systemManager(new MongoDbDataLayer(mongoConnectionString, mongoDatabase));
     
     RemoteJsonManager remoteJsonManager(systemManager);
     remoteJsonManager.run(host, port);

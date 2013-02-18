@@ -223,7 +223,7 @@ std::string RemoteJsonManager::processRequest(const std::string& request)
             throw std::runtime_error(message);
         }
     }
-    catch (std::runtime_error& err)
+    catch (std::exception& err)
     {
         std::string message = "RemoteJsonManager: ERROR Invalid JSON - ";
         message += err.what();

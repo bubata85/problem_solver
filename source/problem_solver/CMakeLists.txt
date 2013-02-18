@@ -90,13 +90,13 @@ add_compiler_flag_if_supported(-Wno-error=deprecated-declarations wdeprecated)
 find_package(Threads)
 find_package(Boost COMPONENTS program_options thread regex system filesystem serialization iostreams)
 
-find_library(MYSQLPP_LIBRARIES
-             NAMES mysqlpp
-             PATHS /usr/lib64)
+set (MONGODB_LIBRARIES "-NOTFOUND")
+find_library(MONGODB_LIBRARIES mongoclient
+            PATHS /usr/lib /usr/lib64 /usr/lib/mongo)
 
-find_path(MYSQLPP_INCLUDE_DIR
-          NAMES mysql++.h
-          PATHS /usr/include/mysql++)
+find_path(MONGODB_INCLUDE_DIR
+            NAMES mongo/client/dbclient.h
+            PATHS /usr/include/mongo/ /usr/local/include/mongo/)
 
 
 # CUSTOM SETTINGS
@@ -110,13 +110,14 @@ include_directories(
     utils/include
     objects/include
     datalayer/include
+    datalayer/include/mongodb/
     system/include
     server/include
 
     # external directories
     ${CMAKE_BINARY_DIR}
     ${Boost_INCLUDE_DIRS}
-    ${MYSQLPP_INCLUDE_DIR}
+    ${MONGODB_INCLUDE_DIR}
 )
 
 # LIBS AND EXECUTABLES
@@ -136,12 +137,13 @@ target_link_libraries(utils
 add_library(datalayer STATIC
     datalayer/src/memorydatalayer.cpp
     datalayer/src/mysqldatalayer.cpp
-    datalayer/src/mongodbdatalayer.cpp
-
     datalayer/src/cachingdatalayer.cpp
+
+    datalayer/src/mongodb/mongodbdatalayer.cpp
 )
 target_link_libraries(datalayer
     utils
+    ${MONGODB_LIBRARIES}
 )
 
 
