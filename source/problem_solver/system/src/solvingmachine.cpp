@@ -122,7 +122,7 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
             suggestion.symptomValues.push_back(0); // static 0 as these are just for statistics!
         }
         
-        if(!investigation.positiveSolution.empty())
+        if(investigation.positiveSolution.empty())
         {
             // in case we have no working solution yet, suggest new ones
             SolutionsWithSameProblem relatedSolutions;
@@ -199,7 +199,7 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
         // this will be used only while retrieving any objects
         boost::unordered_set<Identifier> aggregationOfObjects;
         std::vector<Identifier> objectsToBeLoaded;
-        
+        /** \todo Lubo: Everywhere where there are connections check if positive != 0 !!! (and in the above) */
         // retrieve symptoms links and aggregate related problems
         BOOST_FOREACH(const SymptomMap::value_type& pair, positiveSymptoms)
         {
