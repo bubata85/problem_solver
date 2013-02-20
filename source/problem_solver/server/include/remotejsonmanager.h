@@ -8,6 +8,7 @@
 #pragma once
 
 #include "baseexception.h"
+#include "identifier.h"
 
 #include <vector>
 #include <boost/property_tree/ptree.hpp>
@@ -61,7 +62,16 @@ private:
     
 private:
     
-    std::string performGetOrDelete(bool isGet, const boost::property_tree::ptree& json);
+    template<class T>
+    std::string performDatabaseOperation(const boost::property_tree::ptree& json);
+    
+    template<class T>
+    std::string performGet(const std::vector<Identifier>& identifiers);
+    
+    template<class T>
+    std::string performDelete(CIdentifier identifier);
+    
+    template<class T>
     std::string performAddOrModify(bool isAdd, const boost::property_tree::ptree& json);
     
 private:

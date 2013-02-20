@@ -47,6 +47,8 @@ public:
     virtual void get(const std::vector<Identifier>& problemIDs, ProblemMap& result, std::vector<Identifier>* notFound = NULL);
     virtual void get(const std::vector<Identifier>& symptomIDs, SymptomMap& result, std::vector<Identifier>* notFound = NULL);
     virtual void get(const std::vector<Identifier>& solutionIDs, SolutionMap& result, std::vector<Identifier>* notFound = NULL);
+    virtual void get(const std::vector<Identifier>& symptomLinkIDs, SymptomLinkMap& result, std::vector<Identifier>* notFound = NULL);
+    virtual void get(const std::vector<Identifier>& solutionLinkIDs, SolutionLinkMap& result, std::vector<Identifier>* notFound = NULL);
     virtual void get(const std::vector<Identifier>& investigationIDs, InvestigationMap& result, std::vector<Identifier>* notFound = NULL);
 
     virtual void get(const std::vector<Identifier>& problemIDs, ExtendedProblemMap& result, std::vector<Identifier>* notFound = NULL);

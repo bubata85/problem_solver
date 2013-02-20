@@ -44,6 +44,14 @@ void MongoDbDataLayer::get(const std::vector<Identifier>& solutionIDs, SolutionM
 {
     templateGet(solutionIDs, result, notFound, _solutionCollection);
 }
+void MongoDbDataLayer::get(const std::vector<Identifier>& symptomLinkIDs, SymptomLinkMap& result, std::vector<Identifier>* notFound)
+{
+    templateGet(symptomLinkIDs, result, notFound, _symptomLinksCollection);
+}
+void MongoDbDataLayer::get(const std::vector<Identifier>& solutionLinkIDs, SolutionLinkMap& result, std::vector<Identifier>* notFound)
+{
+    templateGet(solutionLinkIDs, result, notFound, _solutionLinksCollection);
+}
 void MongoDbDataLayer::get(const std::vector<Identifier>& investigationIDs, InvestigationMap& result, std::vector<Identifier>* notFound)
 {
     templateGet(investigationIDs, result, notFound, _investigationCollection);

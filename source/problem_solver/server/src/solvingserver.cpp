@@ -5,9 +5,6 @@
  *  This program is free software: you can redistribute it and/or modify it under the terms of the FreeBSD license.
  */
 
-#include "cachingdatalayer.h"
-#include "memorydatalayer.h"
-#include "mysqldatalayer.h"
 #include "mongodbdatalayer.h"
 
 #include "systemmanager.h"

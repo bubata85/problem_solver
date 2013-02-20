@@ -130,74 +130,58 @@ void JsonSerializer::addGenericInfo(const T& object)
 }
 
 
-Category JsonDeserializer::deserializeCategory(const boost::property_tree::ptree& json)
+void JsonDeserializer::deserialize(const boost::property_tree::ptree& json, bool getID, Category& result)
 {
-    Category result;
-    
-    getValue(result.id, "id", json);
+    if(getID)
+        getValue(result.id, "id", json);
     getValue(result.name, "name", json);
     getValue(result.description, "description", json);
     getValue(result.parent, "parent", json);
     getArray(result.childs, "childs", json);
-    
-    return result;
 }
 
-ExtendedSymptom JsonDeserializer::deserializeSymptom(const boost::property_tree::ptree& json)
+void JsonDeserializer::deserialize(const boost::property_tree::ptree& json, bool getID, ExtendedSymptom& result)
 {
-    ExtendedSymptom result;
-    getGenericInfo(result, json);
-    return result;
+    getGenericInfo(result, getID, json);
 }
 
-ExtendedProblem JsonDeserializer::deserializeProblem(const boost::property_tree::ptree& json)
+void JsonDeserializer::deserialize(const boost::property_tree::ptree& json, bool getID, ExtendedProblem& result)
 {
-    ExtendedProblem result;
-    getGenericInfo(result, json);
-    return result;
+    getGenericInfo(result, getID, json);
 }
 
-ExtendedSolution JsonDeserializer::deserializeSolution(const boost::property_tree::ptree& json)
+void JsonDeserializer::deserialize(const boost::property_tree::ptree& json, bool getID, ExtendedSolution& result)
 {
-    ExtendedSolution result;
-    getGenericInfo(result, json);
-    return result;
+    getGenericInfo(result, getID, json);
 }
 
-SymptomLink JsonDeserializer::deserializeSymptomLink(const boost::property_tree::ptree& json)
+void JsonDeserializer::deserialize(const boost::property_tree::ptree& json, bool getID, SymptomLink& result)
 {
-    SymptomLink result;
-    
-    getValue(result.id, "id", json);
+    if(getID)
+        getValue(result.id, "id", json);
     getValue(result.problemID, "problemID", json);
     getValue(result.symptomID, "symptomID", json);
     getValue(result.positiveChecks, "positiveChecks", json);
     getValue(result.falsePositiveChecks, "falsePositiveChecks", json);
     getValue(result.negativeChecks, "negativeChecks", json);
     getValue(result.confirmed, "confirmed", json);
-    
-    return result;
 }
 
-SolutionLink JsonDeserializer::deserializeSolutionLink(const boost::property_tree::ptree& json)
+void JsonDeserializer::deserialize(const boost::property_tree::ptree& json, bool getID, SolutionLink& result)
 {
-    SolutionLink result;
-    
-    getValue(result.id, "id", json);
+    if(getID)
+        getValue(result.id, "id", json);
     getValue(result.problemID, "problemID", json);
     getValue(result.solutionID, "solutionID", json);
     getValue(result.positive, "positive", json);
     getValue(result.negative, "negative", json);
     getValue(result.confirmed, "confirmed", json);
-    
-    return result;
 }
 
-Investigation JsonDeserializer::deserializeInvestigation(const boost::property_tree::ptree& json)
+void JsonDeserializer::deserialize(const boost::property_tree::ptree& json, bool getID, Investigation& result)
 {
-    Investigation result;
-    
-    getValue(result.id, "id", json);
+    if(getID)
+        getValue(result.id, "id", json);
     getValue(result.closed, "closed", json);
     getValue(result.positiveProblem, "positiveProblem", json);
     getValue(result.positiveSolution, "positiveSolution", json);
@@ -211,14 +195,14 @@ Investigation JsonDeserializer::deserializeInvestigation(const boost::property_t
     
     getArray(result.negativeSolutions, "negativeSolutions", json);
     getArray(result.bannedSolutions, "bannedSolutions", json);
-    
-    return result;
 }
 
 template<class T>
-void JsonDeserializer::getGenericInfo(T& object, const boost::property_tree::ptree& json)
+void JsonDeserializer::getGenericInfo(T& object, bool getID, const boost::property_tree::ptree& json)
 {
-    getValue(object.id, "id", json);
+    if(getID)
+        getValue(object.id, "id", json);
+    
     int difficulty = 0;
     getValue(difficulty, "difficulty", json);
     if(difficulty < difficultyUnknown || difficulty > difficultyCategoryExpertOnly)

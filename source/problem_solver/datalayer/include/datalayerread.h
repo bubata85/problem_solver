@@ -32,6 +32,9 @@ typedef boost::unordered_map<Identifier, ExtendedProblem> ExtendedProblemMap;
 typedef boost::unordered_map<Identifier, ExtendedSymptom> ExtendedSymptomMap;
 typedef boost::unordered_map<Identifier, ExtendedSolution> ExtendedSolutionMap;
 
+typedef boost::unordered_map<Identifier, SymptomLink> SymptomLinkMap;
+typedef boost::unordered_map<Identifier, SolutionLink> SolutionLinkMap;
+
 typedef boost::unordered_map<Identifier, Investigation> InvestigationMap;
 
 // all links connected with a certain problem, organized by symptom ID
@@ -78,6 +81,8 @@ public:
     virtual void get(const std::vector<Identifier>& problemIDs, ProblemMap& result, std::vector<Identifier>* notFound = NULL) = 0;
     virtual void get(const std::vector<Identifier>& symptomIDs, SymptomMap& result, std::vector<Identifier>* notFound = NULL) = 0;
     virtual void get(const std::vector<Identifier>& solutionIDs, SolutionMap& result, std::vector<Identifier>* notFound = NULL) = 0;
+    virtual void get(const std::vector<Identifier>& symptomLinkIDs, SymptomLinkMap& result, std::vector<Identifier>* notFound = NULL) = 0;
+    virtual void get(const std::vector<Identifier>& solutionLinkIDs, SolutionLinkMap& result, std::vector<Identifier>* notFound = NULL) = 0;
     virtual void get(const std::vector<Identifier>& investigationIDs, InvestigationMap& result, std::vector<Identifier>* notFound = NULL) = 0;
     
     /**

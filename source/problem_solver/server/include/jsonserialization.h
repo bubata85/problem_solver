@@ -123,21 +123,21 @@ public:
     
 public:
     
-    Category deserializeCategory(const boost::property_tree::ptree& json);
+    void deserialize(const boost::property_tree::ptree& json, bool getID, Category& result);
     
-    ExtendedSymptom deserializeSymptom(const boost::property_tree::ptree& json);
-    ExtendedProblem deserializeProblem(const boost::property_tree::ptree& json);
-    ExtendedSolution deserializeSolution(const boost::property_tree::ptree& json);
+    void deserialize(const boost::property_tree::ptree& json, bool getID, ExtendedSymptom& result);
+    void deserialize(const boost::property_tree::ptree& json, bool getID, ExtendedProblem& result);
+    void deserialize(const boost::property_tree::ptree& json, bool getID, ExtendedSolution& result);
 
-    SymptomLink deserializeSymptomLink(const boost::property_tree::ptree& json);
-    SolutionLink deserializeSolutionLink(const boost::property_tree::ptree& json);
+    void deserialize(const boost::property_tree::ptree& json, bool getID, SymptomLink& result);
+    void deserialize(const boost::property_tree::ptree& json, bool getID, SolutionLink& result);
     
-    Investigation deserializeInvestigation(const boost::property_tree::ptree& json);
+    void deserialize(const boost::property_tree::ptree& json, bool getID, Investigation& result);
 
 private:
     
     template<class T>
-    void getGenericInfo(T& object, const boost::property_tree::ptree& json);
+    void getGenericInfo(T& object, bool getID, const boost::property_tree::ptree& json);
     
 private:
     
@@ -151,6 +151,7 @@ private:
     void getArray(std::vector<T>& array, const std::string& name, const boost::property_tree::ptree& json)
     {
         const boost::property_tree::ptree& node = json.get_child(name);
+        const boost::property_tree::ptree::value_type value;
 
         BOOST_FOREACH(const boost::property_tree::ptree::value_type& value, node)
         {

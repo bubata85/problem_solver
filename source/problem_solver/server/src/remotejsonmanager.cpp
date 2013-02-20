@@ -161,7 +161,6 @@ void RemoteJsonManager::onNewConnection(int clientSocket)
 std::string RemoteJsonManager::processRequest(const std::string& request)
 {
     printf("Processing request: %s\n", request.c_str());
-    std::string result;
     
     std::vector<std::string> lines;
     boost::algorithm::split(lines, request, boost::algorithm::is_any_of("\n"));
@@ -197,25 +196,38 @@ std::string RemoteJsonManager::processRequest(const std::string& request)
         if(type == "database")
         {
             // these requests are linked with get/add/modify/delete
-            //std::string operation = jsonTree.get<std::string>("operation");
+            std::string objectType = jsonTree.get<std::string>("ObjectType");
             
-            // process the request
-            
-            ExtendedSymptom symptom;
-            symptom.id = "symptomKey";
-            symptom.confirmed = false;
-            symptom.difficulty = difficultyCategoryExpertOnly;
-            symptom.categoryID = "categoryKey";
-            symptom.description = "test description";
-            symptom.name = "test name";
-            symptom.steps.push_back("step1");
-            symptom.steps.push_back("step2");
-            symptom.steps.push_back("step3");
-            symptom.tags.insert("tag1");
-            symptom.tags.insert("tag2");
-            
-            JsonSerializer serializer;
-            result = serializer.serialize(symptom);
+            if(objectType == "category")
+            {
+                return performDatabaseOperation<Category>(jsonTree);
+            }
+            else if(objectType == "symptom")
+            {
+                return performDatabaseOperation<ExtendedSymptom>(jsonTree);
+            }
+            else if(objectType == "problem")
+            {
+                return performDatabaseOperation<ExtendedProblem>(jsonTree);
+            }
+            else if(objectType == "solution")
+            {
+                return performDatabaseOperation<ExtendedSolution>(jsonTree);
+            }
+            else if(objectType == "symptomLink")
+            {
+                return performDatabaseOperation<SymptomLink>(jsonTree);
+            }
+            else if(objectType == "solutionLink")
+            {
+                return performDatabaseOperation<SolutionLink>(jsonTree);
+            }
+            else if(objectType == "investigation")
+            {
+                return performDatabaseOperation<Investigation>(jsonTree);
+            }
+
+            throw Exception("Unknown ObjectType");
         }
         else
         {
@@ -230,7 +242,7 @@ std::string RemoteJsonManager::processRequest(const std::string& request)
         throw Exception(message);
     }
     
-    return result;
+    throw Exception("Unknown RequestType");
 }
 
 /**
@@ -270,22 +282,84 @@ void RemoteJsonManager::printMessage(const char* message)
     printf("%s\n", message);
 }
 
-std::string RemoteJsonManager::performGetOrDelete(bool isGet, const boost::property_tree::ptree& json)
+template<class T>
+std::string RemoteJsonManager::performDatabaseOperation(const boost::property_tree::ptree& json)
+{
+    std::string operation = json.get<std::string>("operation");
+    
+    if(operation == "add")
+    {
+        const ptree& jsonObject = json.get_child("object").begin()->second;
+        return performAddOrModify<T>(true, jsonObject);
+    }
+    else if(operation == "modify")
+    {
+        const ptree& jsonObject = json.get_child("object").begin()->second;
+        return performAddOrModify<T>(false, jsonObject);
+    }
+    else if(operation == "delete")
+    {
+        
+    }
+    else if(operation == "get")
+    {
+        
+    }
+
+    throw Exception("Unknown operation");
+}
+
+/**
+ * 
+ */
+template<class T>
+std::string RemoteJsonManager::performGet(const std::vector<Identifier>& identifiers)
 {
     std::string response;
     
-    std::string objectType = json.get<std::string>("objectType");
-    /** \todo Lubo: implement these! */
+    
     
     return response;
 }
 
+/**
+ * Deletes the corresponding object with IDENTIFIER
+ */
+template<class T>
+std::string RemoteJsonManager::performDelete(CIdentifier identifier)
+{
+    std::string response;
+    
+    
+    
+    return response;
+}
+
+/**
+ * Handles adds and modifications of objects
+ */
+template<class T>
 std::string RemoteJsonManager::performAddOrModify(bool isAdd, const boost::property_tree::ptree& json)
 {
     std::string response;
     
-    std::string objectType = json.get<std::string>("objectType");
-    /** \todo Lubo: implement these! */
+    T deserializedObject;
+    
+    bool getID = !isAdd;
+    
+    JsonDeserializer jsonDeserializer;
+    jsonDeserializer.deserialize(json, getID, deserializedObject);
+    
+    if(isAdd)
+    {
+        Identifier newId = _systemManager.getDataLayer().add(deserializedObject);
+        response = "{ \"result\"=\"" + newId + "\"}";
+    }
+    else
+    {
+        _systemManager.getDataLayer().modify(deserializedObject);
+        response = "{ \"result\"=\"done\"}";
+    }
     
     return response;
 }

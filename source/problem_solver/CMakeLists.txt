@@ -135,10 +135,6 @@ target_link_libraries(utils
 
 # contains different datalayer implementations
 add_library(datalayer STATIC
-    datalayer/src/memorydatalayer.cpp
-    datalayer/src/mysqldatalayer.cpp
-    datalayer/src/cachingdatalayer.cpp
-
     datalayer/src/mongodb/mongodbdatalayer.cpp
 )
 target_link_libraries(datalayer
