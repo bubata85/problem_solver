@@ -70,7 +70,7 @@ public:
     void onSymptomChecked(CIdentifier symptomID, bool checkResult, CIdentifier investigationID);
     void onSolutionChecked(CIdentifier solutionID, bool checkResult, CIdentifier investigationID);
     
-    SolvingMachine::Suggestion makeSuggestion(const Investigation& investigation);
+    SolvingMachine::Suggestion makeSuggestion(CIdentifier investigationID);
     IDataLayer& getDataLayer();
     
 private:

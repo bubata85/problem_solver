@@ -52,6 +52,8 @@ std::string JsonSerializer::serialize(const ExtendedSolution& solution)
 std::string JsonSerializer::serialize(const SymptomLink& symptomLink)
 {
     _result.clear();
+    
+    startObject();
 
     addKeyValue("id", symptomLink.id);
     addKeyValue("problemID", symptomLink.problemID);
@@ -61,6 +63,8 @@ std::string JsonSerializer::serialize(const SymptomLink& symptomLink)
     addKeyValue("negativeChecks", symptomLink.negativeChecks);
     addKeyValue("confirmed", symptomLink.confirmed, false);
     
+    endObject();
+    
     return _result;
 }
 
@@ -68,6 +72,8 @@ std::string JsonSerializer::serialize(const SolutionLink& solutionLink)
 {
     _result.clear();
 
+    startObject();
+    
     addKeyValue("id", solutionLink.id);
     addKeyValue("problemID", solutionLink.problemID);
     addKeyValue("solutionID", solutionLink.solutionID);
@@ -75,12 +81,16 @@ std::string JsonSerializer::serialize(const SolutionLink& solutionLink)
     addKeyValue("negative", solutionLink.negative);
     addKeyValue("confirmed", solutionLink.confirmed, false);
     
+    endObject();
+    
     return _result;
 }
     
 std::string JsonSerializer::serialize(const Investigation& investigation)
 {
     _result.clear();
+    
+    startObject();
 
     addKeyValue("id", investigation.id);
     addKeyValue("closed", investigation.closed);
@@ -98,9 +108,50 @@ std::string JsonSerializer::serialize(const Investigation& investigation)
     addArray("negativeSolutions", investigation.negativeSolutions);
     addArray("bannedSolutions", investigation.bannedSolutions, false);
     
+    endObject();
+    
     return _result;
 }
 
+std::string JsonSerializer::serialize(const SystemManager::SearchResult& searchResult)
+{
+    _result.clear();
+    
+    startObject();
+
+    addArray("symptoms", searchResult.symptoms);
+    addArray("symptomRelevance", searchResult.symptomRelevance);
+    
+    addArray("problems", searchResult.problems);
+    addArray("problemRelevance", searchResult.problemRelevance);
+    
+    addArray("solutions", searchResult.solutions);
+    addArray("solutionRelevance", searchResult.solutionRelevance);
+    
+    endObject();
+    
+    return _result;
+}
+
+std::string JsonSerializer::serialize(const SolvingMachine::Suggestion& suggestion)
+{
+    _result.clear();
+    
+    startObject();
+
+    addArray("symptoms", suggestion.symptoms);
+    addArray("symptomValues", suggestion.symptomValues);
+    
+    addArray("problems", suggestion.problems);
+    addArray("problemValues", suggestion.problemValues);
+    
+    addArray("solutions", suggestion.solutions);
+    addArray("solutionValues", suggestion.solutionValues);
+    
+    endObject();
+    
+    return _result;
+}
 
 void JsonSerializer::startObject()
 {

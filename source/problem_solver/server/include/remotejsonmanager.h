@@ -69,7 +69,7 @@ private:
     std::string performGet(const std::vector<Identifier>& identifiers);
     
     template<class T>
-    std::string performDelete(CIdentifier identifier);
+    std::string performDelete(const std::vector<Identifier>& identifiers);
     
     template<class T>
     std::string performAddOrModify(bool isAdd, const boost::property_tree::ptree& json);

@@ -229,6 +229,45 @@ std::string RemoteJsonManager::processRequest(const std::string& request)
 
             throw Exception("Unknown ObjectType");
         }
+        else if(type == "search")
+        {
+            std::string searchPhrase = jsonTree.get<std::string>("search");
+            
+            JsonSerializer serializer;
+            return serializer.serialize(_systemManager.performSearch(searchPhrase));
+        }
+        else if(type == "suggest")
+        {
+            std::string investigationID = jsonTree.get<std::string>("investigation");
+
+            JsonSerializer serializer;
+            return serializer.serialize(_systemManager.makeSuggestion(investigationID));
+        }
+        else if(type == "event")
+        {
+            std::string investigation = jsonTree.get<std::string>("investigation");
+            std::string event = jsonTree.get<std::string>("event");
+            std::string object = jsonTree.get<std::string>("object");
+            bool result = jsonTree.get<bool>("result");
+            
+            if(event == "symptom")
+            {
+                _systemManager.onSymptomChecked(object, result, investigation);
+                return "{ \"result\"=\"done\"}";
+            }
+            else if(event == "problem")
+            {
+                _systemManager.onProblemChecked(object, result, investigation);
+                return "{ \"result\"=\"done\"}";
+            }
+            else if(event == "solution")
+            {
+                _systemManager.onSolutionChecked(object, result, investigation);
+                return "{ \"result\"=\"done\"}";
+            }
+            
+            throw Exception("Unknown event");
+        }
         else
         {
             std::string message = "Unknown RequestType " + type;
@@ -299,25 +338,53 @@ std::string RemoteJsonManager::performDatabaseOperation(const boost::property_tr
     }
     else if(operation == "delete")
     {
+        JsonDeserializer deserializer;
+        std::vector<Identifier> ids;
+        deserializer.getArray(ids, "ids", json);
         
+        performGet<T>(ids);
     }
     else if(operation == "get")
     {
+        JsonDeserializer deserializer;
+        std::vector<Identifier> ids;
+        deserializer.getArray(ids, "ids", json);
         
+        performDelete<T>(ids);
     }
 
     throw Exception("Unknown operation");
 }
 
 /**
- * 
+ * Retrieves the corresponding objects from the database
  */
 template<class T>
 std::string RemoteJsonManager::performGet(const std::vector<Identifier>& identifiers)
 {
     std::string response;
     
+    typedef boost::unordered_map<Identifier, T> ValueMap;
+    ValueMap objectsToBeRetrieved;
+    _systemManager.getDataLayer().get(identifiers, objectsToBeRetrieved);
     
+    JsonSerializer serializer;
+    
+    response = "{ \"result\"=[";
+    
+    bool first = true;
+    BOOST_FOREACH(CIdentifier id, identifiers)
+    {
+        if(!first)
+            response += ",";
+        
+        response += serializer.serialize(objectsToBeRetrieved[id]);
+        
+        first = false;
+        
+    }
+    
+    response = "]}";
     
     return response;
 }
@@ -326,11 +393,20 @@ std::string RemoteJsonManager::performGet(const std::vector<Identifier>& identif
  * Deletes the corresponding object with IDENTIFIER
  */
 template<class T>
-std::string RemoteJsonManager::performDelete(CIdentifier identifier)
+std::string RemoteJsonManager::performDelete(const std::vector<Identifier>& identifiers)
 {
     std::string response;
+
+    typedef boost::unordered_map<Identifier, T> ValueMap;
+    ValueMap objectsToBeDeleted;
+    _systemManager.getDataLayer().get(identifiers, objectsToBeDeleted);
     
+    BOOST_FOREACH(typename ValueMap::value_type pair, objectsToBeDeleted)
+    {
+        _systemManager.getDataLayer().remove(pair.second);
+    }
     
+    response = "{ \"result\"=\"done\"}";
     
     return response;
 }

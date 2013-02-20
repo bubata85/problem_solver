@@ -8,6 +8,8 @@
 #pragma once
 
 #include "datalayer.h"
+#include "systemmanager.h"
+#include "solvingmachine.h"
 
 #include <string>
 #include <vector>
@@ -40,6 +42,9 @@ public:
     std::string serialize(const SolutionLink& solutionLink);
     
     std::string serialize(const Investigation& investigation);
+    
+    std::string serialize(const SystemManager::SearchResult& searchResult);
+    std::string serialize(const SolvingMachine::Suggestion& suggestion);
 
 private:
     
@@ -139,7 +144,7 @@ private:
     template<class T>
     void getGenericInfo(T& object, bool getID, const boost::property_tree::ptree& json);
     
-private:
+public:
     
     template<class T>
     void getValue(T& value, const std::string& name, const boost::property_tree::ptree& json)

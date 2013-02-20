@@ -257,8 +257,10 @@ void SystemManager::onSolutionChecked(CIdentifier solutionID, bool checkResult, 
 /**
  * Returns a suggested course of action based on the current state of an unknown problem
  */
-SolvingMachine::Suggestion SystemManager::makeSuggestion(const Investigation& investigation)
+SolvingMachine::Suggestion SystemManager::makeSuggestion(CIdentifier investigationID)
 {
+    Investigation investigation = getInvestigation(investigationID);
+    
     SolvingMachine machine(*_dataLayer.get());
     return machine.makeSuggestion(investigation);
 }
