@@ -156,8 +156,6 @@ public:
     void getArray(std::vector<T>& array, const std::string& name, const boost::property_tree::ptree& json)
     {
         const boost::property_tree::ptree& node = json.get_child(name);
-        const boost::property_tree::ptree::value_type value;
-
         BOOST_FOREACH(const boost::property_tree::ptree::value_type& value, node)
         {
             array.push_back(value.second.get_value<T>());

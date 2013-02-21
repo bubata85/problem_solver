@@ -38,6 +38,21 @@ struct Investigation
     std::vector<Identifier> bannedSolutions; // solutions that the user did not wish to verify
 
     Investigation():closed(false){}
+    
+    bool operator == (const Investigation& compare) const
+    {
+        return (id == compare.id &&
+                closed == compare.closed &&
+                positiveProblem == compare.positiveProblem &&
+                positiveSolution == compare.positiveSolution &&
+                positiveSymptoms == compare.positiveSymptoms &&
+                negativeSymptoms == compare.negativeSymptoms &&
+                bannedSymptoms == compare.bannedSymptoms &&
+                negativeProblems == compare.negativeProblems &&
+                bannedProblems == compare.bannedProblems &&
+                negativeSolutions == compare.negativeSolutions &&
+                bannedSolutions == compare.bannedSolutions);
+    }
 };
 
 } // namespace ProblemSolver

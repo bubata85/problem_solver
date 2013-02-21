@@ -28,6 +28,10 @@ struct Symptom: public GenericInfo
  */
 struct ExtendedSymptom: public Symptom, public ExtendedGenericInfo
 {
+    bool operator == (const ExtendedSymptom& compare) const
+    {
+        return (GenericInfo::operator==(compare) && ExtendedGenericInfo::operator==(compare));
+    }
 };
 
 /**
@@ -47,6 +51,17 @@ struct SymptomLink
     bool confirmed; // indicates if a specialist has confirmed this relation
     
     SymptomLink():positiveChecks(0),falsePositiveChecks(0),negativeChecks(0),confirmed(false){}
+    
+    bool operator == (const SymptomLink& compare) const
+    {
+        return (id == compare.id &&
+                problemID == compare.problemID &&
+                symptomID == compare.symptomID &&
+                positiveChecks == compare.positiveChecks &&
+                falsePositiveChecks == compare.falsePositiveChecks &&
+                negativeChecks == compare.negativeChecks &&
+                confirmed == compare.confirmed);
+    }
 };
 
 } // namespace ProblemSolver

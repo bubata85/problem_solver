@@ -39,6 +39,10 @@ struct Solution: public GenericInfo
  */
 struct ExtendedSolution: public Solution, public ExtendedGenericInfo
 {
+    bool operator == (const ExtendedSolution& compare) const
+    {
+        return (GenericInfo::operator==(compare) && ExtendedGenericInfo::operator==(compare));
+    }
 };
 
 /**
@@ -57,6 +61,16 @@ struct SolutionLink
     bool confirmed; // indicates if a specialist has confirmed this solution
     
     SolutionLink():positive(0),negative(0),confirmed(false){}
+    
+    bool operator == (const SolutionLink& compare) const
+    {
+        return (id == compare.id &&
+                problemID == compare.problemID &&
+                solutionID == compare.solutionID &&
+                positive == compare.positive &&
+                negative == compare.negative &&
+                confirmed == compare.confirmed);
+    }
 };
 
 } // namespace ProblemSolver

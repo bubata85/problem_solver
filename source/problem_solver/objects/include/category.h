@@ -31,6 +31,15 @@ struct Category
     
     Identifier parent; // if empty this is a root
     std::vector<Identifier> childs; // contains all children of this category
+    
+    bool operator == (const Category& compare) const
+    {
+        return (id == compare.id &&
+                name == compare.name &&
+                description == compare.description &&
+                parent == compare.parent &&
+                childs == compare.childs);
+    }
 };
 
 } // namespace ProblemSolver

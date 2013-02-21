@@ -40,7 +40,8 @@ SystemManager::SearchResult SystemManager::performSearch(const std::string& sear
     {
         if(word.size() > 2)
         {
-            boost::algorithm::to_lower(word);
+            /** \todo Lubo: this needs to be re-enabled when DB starts saving lowercase */
+            //boost::algorithm::to_lower(word);
             searchWords.push_back(word);
         }
     }

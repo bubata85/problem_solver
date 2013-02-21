@@ -17,7 +17,8 @@ using namespace mongo;
 namespace ProblemSolver
 {
 
-MongoDbDataLayer::MongoDbDataLayer(const std::string& connectionString, const std::string& database)
+MongoDbDataLayer::MongoDbDataLayer(const std::string& connectionString, const std::string& database):
+    _connectionString(connectionString)
 {
     _categoryCollection = database + ".categories";
     _symptomCollection = database + ".symptoms";
@@ -26,6 +27,9 @@ MongoDbDataLayer::MongoDbDataLayer(const std::string& connectionString, const st
     _symptomLinksCollection = database + ".symptomLinks";
     _solutionLinksCollection = database + ".solutionLinks";
     _investigationCollection = database + ".investigations";
+    
+    MongoConnection connection(_connectionString);
+    connection.done();
 }
     
 void MongoDbDataLayer::get(const std::vector<Identifier>& categoryIDs, CategoryMap& result, std::vector<Identifier>* notFound)

@@ -50,7 +50,7 @@ public:
     
     static void stopAll();
     
-private:
+protected:
     
     void onNewConnection(int clientSocket);
     std::string processRequest(const std::string& request);

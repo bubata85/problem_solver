@@ -51,6 +51,10 @@ struct Problem: public GenericInfo
  */
 struct ExtendedProblem: public Problem, public ExtendedGenericInfo
 {
+    bool operator == (const ExtendedProblem& compare) const
+    {
+        return (GenericInfo::operator==(compare) && ExtendedGenericInfo::operator==(compare));
+    }
 };
 
 } // namespace ProblemSolver

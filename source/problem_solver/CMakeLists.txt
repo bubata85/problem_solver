@@ -154,18 +154,37 @@ target_link_libraries(system
 
 
 # JSON server interface for the system
-add_executable(solvingserver
-    server/src/solvingserver.cpp
+add_library(jsonserver STATIC
     server/src/remotejsonmanager.cpp
     server/src/jsonserialization.cpp
+)
+target_link_libraries(jsonserver
+    system
+)
+
+
+# executable that starts the system with JSON server interface & MongoDB KB
+add_executable(solvingserver
+    server/src/solvingserver.cpp
     )
 target_link_libraries (solvingserver
-    system
+    jsonserver
     )
 set_target_properties (solvingserver
   PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/solvingserver)
 
+
+# system test tool
+add_executable(systemtest
+    tests/systemtest.cpp
+    )
+target_link_libraries (systemtest
+    jsonserver
+    )
+set_target_properties (systemtest
+  PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
 
 
 # FILE COPYING

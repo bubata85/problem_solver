@@ -29,6 +29,14 @@ struct GenericInfo
     bool confirmed; // indicates if a specialist has confirmed this object
     
     GenericInfo():difficulty(difficultyUnknown),confirmed(false){}
+    
+    bool operator == (const GenericInfo& compare) const
+    {
+        return (id == compare.id &&
+                categoryID == compare.categoryID &&
+                difficulty == compare.difficulty &&
+                confirmed == compare.confirmed);
+    }
 };
 
 /**
@@ -41,6 +49,14 @@ struct ExtendedGenericInfo
     boost::unordered_set<std::string> tags; // tags associated with the object
     
     std::vector<std::string> steps; // steps needed to "complete"
+    
+    bool operator == (const ExtendedGenericInfo& compare) const
+    {
+        return (name == compare.name &&
+                description == compare.description &&
+                tags == compare.tags &&
+                steps == compare.steps);
+    }
 };
 
 } // namespace ProblemSolver

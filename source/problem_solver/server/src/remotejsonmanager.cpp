@@ -253,17 +253,17 @@ std::string RemoteJsonManager::processRequest(const std::string& request)
             if(event == "symptom")
             {
                 _systemManager.onSymptomChecked(object, result, investigation);
-                return "{ \"result\"=\"done\"}";
+                return "{ \"result\":\"done\"}";
             }
             else if(event == "problem")
             {
                 _systemManager.onProblemChecked(object, result, investigation);
-                return "{ \"result\"=\"done\"}";
+                return "{ \"result\":\"done\"}";
             }
             else if(event == "solution")
             {
                 _systemManager.onSolutionChecked(object, result, investigation);
-                return "{ \"result\"=\"done\"}";
+                return "{ \"result\":\"done\"}";
             }
             
             throw Exception("Unknown event");
@@ -328,21 +328,13 @@ std::string RemoteJsonManager::performDatabaseOperation(const boost::property_tr
     
     if(operation == "add")
     {
-        const ptree& jsonObject = json.get_child("object").begin()->second;
+        const ptree& jsonObject = json.get_child("object");
         return performAddOrModify<T>(true, jsonObject);
     }
     else if(operation == "modify")
     {
-        const ptree& jsonObject = json.get_child("object").begin()->second;
+        const ptree& jsonObject = json.get_child("object");
         return performAddOrModify<T>(false, jsonObject);
-    }
-    else if(operation == "delete")
-    {
-        JsonDeserializer deserializer;
-        std::vector<Identifier> ids;
-        deserializer.getArray(ids, "ids", json);
-        
-        performGet<T>(ids);
     }
     else if(operation == "get")
     {
@@ -350,7 +342,15 @@ std::string RemoteJsonManager::performDatabaseOperation(const boost::property_tr
         std::vector<Identifier> ids;
         deserializer.getArray(ids, "ids", json);
         
-        performDelete<T>(ids);
+        return performGet<T>(ids);
+    }
+    else if(operation == "delete")
+    {
+        JsonDeserializer deserializer;
+        std::vector<Identifier> ids;
+        deserializer.getArray(ids, "ids", json);
+        
+        return performDelete<T>(ids);
     }
 
     throw Exception("Unknown operation");
@@ -370,21 +370,33 @@ std::string RemoteJsonManager::performGet(const std::vector<Identifier>& identif
     
     JsonSerializer serializer;
     
-    response = "{ \"result\"=[";
+    response = "{ \"result\":[";
     
     bool first = true;
-    BOOST_FOREACH(CIdentifier id, identifiers)
+    if(!identifiers.empty())
     {
-        if(!first)
-            response += ",";
-        
-        response += serializer.serialize(objectsToBeRetrieved[id]);
-        
-        first = false;
-        
+        BOOST_FOREACH(CIdentifier id, identifiers)
+        {
+            if(!first)
+                response += ",";
+            
+            response += serializer.serialize(objectsToBeRetrieved[id]);
+            first = false;
+        }
+    }
+    else
+    {
+        BOOST_FOREACH(typename ValueMap::value_type pair, objectsToBeRetrieved)
+        {
+            if(!first)
+                response += ",";
+            
+            response += serializer.serialize(pair.second);
+            first = false;
+        }
     }
     
-    response = "]}";
+    response += "]}";
     
     return response;
 }
@@ -406,7 +418,7 @@ std::string RemoteJsonManager::performDelete(const std::vector<Identifier>& iden
         _systemManager.getDataLayer().remove(pair.second);
     }
     
-    response = "{ \"result\"=\"done\"}";
+    response = "{ \"result\":\"done\"}";
     
     return response;
 }
@@ -429,12 +441,12 @@ std::string RemoteJsonManager::performAddOrModify(bool isAdd, const boost::prope
     if(isAdd)
     {
         Identifier newId = _systemManager.getDataLayer().add(deserializedObject);
-        response = "{ \"result\"=\"" + newId + "\"}";
+        response = "{ \"result\":\"" + newId + "\"}";
     }
     else
     {
         _systemManager.getDataLayer().modify(deserializedObject);
-        response = "{ \"result\"=\"done\"}";
+        response = "{ \"result\":\"done\"}";
     }
     
     return response;

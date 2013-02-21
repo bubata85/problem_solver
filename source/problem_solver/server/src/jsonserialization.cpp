@@ -126,7 +126,7 @@ std::string JsonSerializer::serialize(const SystemManager::SearchResult& searchR
     addArray("problemRelevance", searchResult.problemRelevance);
     
     addArray("solutions", searchResult.solutions);
-    addArray("solutionRelevance", searchResult.solutionRelevance);
+    addArray("solutionRelevance", searchResult.solutionRelevance, false);
     
     endObject();
     
@@ -146,7 +146,7 @@ std::string JsonSerializer::serialize(const SolvingMachine::Suggestion& suggesti
     addArray("problemValues", suggestion.problemValues);
     
     addArray("solutions", suggestion.solutions);
-    addArray("solutionValues", suggestion.solutionValues);
+    addArray("solutionValues", suggestion.solutionValues, false);
     
     endObject();
     
