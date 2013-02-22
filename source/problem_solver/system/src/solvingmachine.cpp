@@ -29,16 +29,20 @@ SolvingMachine::Suggestion SolvingMachine::makeSuggestion(const Investigation& i
     
     // look up the standard things
     SymptomMap positiveSymptoms;
-    _dataLayer.get(investigation.positiveSymptoms, positiveSymptoms);
+    if(!investigation.positiveSymptoms.empty())
+        _dataLayer.get(investigation.positiveSymptoms, positiveSymptoms);
     
     SymptomMap negativeSymptoms;
-    _dataLayer.get(investigation.negativeSymptoms, negativeSymptoms);
+    if(!investigation.negativeSymptoms.empty())
+        _dataLayer.get(investigation.negativeSymptoms, negativeSymptoms);
     
     ProblemMap negativeProblems;
-    _dataLayer.get(investigation.negativeProblems, negativeProblems);
+    if(!investigation.negativeProblems.empty())
+        _dataLayer.get(investigation.negativeProblems, negativeProblems);
     
     SolutionMap negativeSolutions;
-    _dataLayer.get(investigation.negativeSolutions, negativeSolutions);
+    if(!investigation.negativeSolutions.empty())
+        _dataLayer.get(investigation.negativeSolutions, negativeSolutions);
     
     CategoryBranch partialCategoryBranch;
     

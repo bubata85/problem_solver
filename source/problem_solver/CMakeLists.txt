@@ -187,6 +187,17 @@ set_target_properties (systemtest
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
 
 
+# creates an example database populated with ISP related knowledge
+add_executable(createdatabase
+    tests/createdatabase.cpp
+    )
+target_link_libraries (createdatabase
+    system
+    )
+set_target_properties (createdatabase
+  PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
+
 # FILE COPYING
 
 #copy_files(datacacheserver/conf ${CMAKE_SOURCE_DIR}/datacacheserver/conf datacacheserver_deploy.xml datacacheserver_deploy_backup.xml)
