@@ -1,0 +1,61 @@
+
+// modules
+mongodb
+mongodb-server
+boost
+
+// to validate JSON
+http://jsonlint.com/
+
+// to start server
+mongod --port 22222 --dbpath ./
+
+// to populate ISP database
+./tests/createdatabase
+
+// categories
+1. general
+2. lan
+3. wireless
+
+
+// symptomi
+1. can't ping localhost
+2. can access only some sites
+3. network stays disconnected
+4. can't ping router/switch
+5. message pops in browser when site doesnt load
+6. no problem can be detected
+7. the lan light on the router/computer back is not on
+8. ping only to specific sites is missing
+9. messages from firewall pop from time to time
+10. can't find wireless network
+11. network device not in devicelist
+
+
+// problemi
+1. izgorqla lan karta - 1, 7, 11
+2. problem v ISP - 2, 6, 8
+3. zabil/izkljuchen router/switch - 3, 4, 7
+4. firewall blocking network - 2, 4, 9
+5. site problem - 2, 8
+6. izgorql router/switch - 3, 4, 7
+7. greshni nastrojki na lan - 3, 4
+8. zabila lan karta - 3, 4, 7
+9. browser settings - 2, 5
+10. wireless not turned on - 10, 3, 4
+11. neinstalirano ustrojstvo - 11, 1
+
+
+// solutions
+1. replace problematic lan card - 1, 8
+2. contact ISP - 2
+3. restart router/switch - 3
+4. replace problematic router/switch - 3, 6
+5. contact site owner if needed - 4
+6. enter correct lan settings - 7
+7. restart computer - 8
+8. change browser settings - 9
+9. turn on wireless - 10
+10. install drivers for the device - 11
+ 
