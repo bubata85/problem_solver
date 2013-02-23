@@ -278,14 +278,13 @@ int main(int argc, const char* argv[])
     
     ExtendedSymptom symptom9;
     symptom9.id = "";
-    symptom9.categoryID = categoryWireless.id;
+    symptom9.categoryID = categoryGeneral.id;
     symptom9.difficulty = difficultyJustByIntuition;
     symptom9.confirmed = true;
-    symptom9.name = "No wireless network detected";
-    symptom9.description = "No wireless network can be detected.";
-    symptom9.tags.insert("wireless");
-    symptom9.tags.insert("network");
-    symptom9.tags.insert("detected");
+    symptom9.name = "Messages from firewall appear";
+    symptom9.description = "Messages from firewall appear from time to time.";
+    symptom9.tags.insert("firewall");
+    symptom9.tags.insert("message");
     symptom9.steps.push_back("Open a site you know does not work.");
     symptom9.steps.push_back("Open several different international sites.");
     symptom9.steps.push_back("Open several different local sites.");
@@ -477,7 +476,7 @@ int main(int argc, const char* argv[])
     
     ExtendedProblem problem9;
     problem9.id = "";
-    problem9.categoryID = categoryGeneral.id;
+    problem9.categoryID = 	.id;
     problem9.difficulty = difficultyJustByLogic;
     problem9.confirmed = true;
     problem9.name = "Restrictive browser settings";
