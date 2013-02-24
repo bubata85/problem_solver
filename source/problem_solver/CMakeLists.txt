@@ -198,16 +198,3 @@ set_target_properties (createdatabase
   PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
 
-# FILE COPYING
-
-#copy_files(datacacheserver/conf ${CMAKE_SOURCE_DIR}/datacacheserver/conf datacacheserver_deploy.xml datacacheserver_deploy_backup.xml)
-
-#    copy_and_rename(. ${CMAKE_SOURCE_DIR}/ logger.conf.trace logger.conf)
-#    copy_and_rename(datacacheserver/bin ${CMAKE_SOURCE_DIR}/ logger.conf.trace logger.conf)
-#ELSE()
-#    copy_and_rename(. ${CMAKE_SOURCE_DIR}/ logger.conf.error logger.conf)
-#    copy_and_rename(datacacheserver/bin ${CMAKE_SOURCE_DIR}/ logger.conf.trace logger.conf)
-#ENDIF()
-
-#copy_files(datacacheserver/bin ${CMAKE_SOURCE_DIR}/datacacheserver/conf/ datacacheserver.ini.sample datacacheserver.ini.preprod datacacheserver.ice.conf)
-#copy_files(server/bin ${CMAKE_SOURCE_DIR}/datacacheclient/conf/ datacacheclient.ice.conf)

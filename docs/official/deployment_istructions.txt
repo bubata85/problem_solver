@@ -1,0 +1,58 @@
+Instructions for building and running the problem_solver project.
+Written by Lyubomir Stankov.
+
+The project is built and tested on Fedora17 using GCC4.6.x
+
+It requires any version of the following external libs:
+- boost
+- mongodb
+- mongodb-server
+
+Building is done using the cmake tool so you will also need that too.
+
+In order to build the code:
+- navigate to the problem_solver folder
+- create a new folder named 'build' (or however you like)
+- enter the build folder
+- run ./cmake ../
+- run make
+
+This will compile the code and produce three executables.
+
+First one is in folder 'tests' and is called 'systemtest'
+This is a unit test designed to check if the system is working correctly.
+
+Second one is again in folder 'tests' and is called 'createdatabase'
+It is used to populate a database with example objects from the field if ISP companies.
+
+Third one is in folder 'solvingserver' and it is called 'solvingserver'
+This is the problem solving system wrapped around a JSON web server.
+
+To use any of the executables you will need to start a mongoDB server.
+
+- in another shell create a folder ./mongo
+- run 'mongod --port 22222 --dbpath ./mongo'
+- you now have a running mongo server
+
+
+To use the system
+- run the systemtest tool to verify that code is working correctly
+- run the createdatabase tool to populate the database with data
+- run the solvingserver with this command: './solvingserver --host=localhost --port=33333 --mongoConnection=localhost:22222 --mongoDatabase=isp_kb'
+- now you have a running solvingserver on localhost:33333
+- you can send queries to the server using wget, curl or any other tool capable of making POST requests
+- check the documentation and source code for the format of the queries
+
+Notes:
+
+Both the systemtest and createdatabase tools can be run only once with this database.
+If they are run twice by accident it is best to stop the mongod server and delete
+the contents of the ./mongo folder, then start the server and run the tools once.
+
+Running systemtest will check the JSON serialization and deserializaion of all objects
+and will save, load and compare objects to see if the database layer is working correctly.
+
+The createdatabase tool will insert categories, symptoms, problems, solutions and links in the database.
+It will then create a new investigation and request a suggestion to see if the system is working.
+
+To validate your JSON requests you can use http://jsonlint.com/
