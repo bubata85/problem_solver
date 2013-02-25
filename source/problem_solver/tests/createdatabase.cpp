@@ -476,7 +476,7 @@ int main(int argc, const char* argv[])
     
     ExtendedProblem problem9;
     problem9.id = "";
-    problem9.categoryID = 	.id;
+    problem9.categoryID = categoryGeneral.id;
     problem9.difficulty = difficultyJustByLogic;
     problem9.confirmed = true;
     problem9.name = "Restrictive browser settings";
